@@ -1,0 +1,4 @@
+* Programm verstehen
+* Mandelbrot / Julia verstehen
+* Grundlagen
+* Features überlegen
