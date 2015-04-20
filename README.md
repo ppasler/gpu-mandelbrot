@@ -13,3 +13,6 @@ git fetch 	synchronisiere änderungen vom server
 git pull	lade ändergungen vom server auf den rechner
 git commit	schiebe lokale änderungen in das repository auf dem rechner
 git push	schiebe änderungen vom lokalen repository auf den server 
+
+
+# hello Test
