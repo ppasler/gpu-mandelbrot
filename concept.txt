@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-* Grundlagen
- * Matlab
- * Mandelbrot / Julia
- * GPU, CUDA, CPU
-* Programm nachvollziehen, weitere Matlab Programme analysieren
-* Dokumentation vorbereiten
-* Features überlegen
- * Auswahl der PU (Processing Unit): CPU, GPU, CUDA
- * Zeiterfassung / -auswertung / -vergleich (erst Text, dann Visuell)
- * Automatischer Testablauf 
-  * Intervall Berechnung mehrerer Iteration nacheinander (10, 100, 1000 usw.)
-  * Alle PU nacheinander
- * Einfärben des Plot
- * Zoom
- * Live Zeichnen (Animiert)
-=======
 * Grundlagen
  * Matlab
  * Mandelbrot / Julia
@@ -34,4 +17,3 @@
  * Zoom (P)
  * // Live Zeichnen (Animiert)
  * GUI Konzept / Umsetzung
->>>>>>> 9c539a78ea5d10c491610ffaa7071a967448b72f
