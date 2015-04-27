@@ -102,12 +102,18 @@ toc;
 
 disp('Calc')
 tic;
+
+
 if get(handles.mandelbrot,'value')==1
     C=cX.*X+cY.*Y.*1i;
 else
     C=cX+cY*1i;
 end
-
+index=str2double(get(handles.index,'string'));
+iterations=str2double(get(handles.iterations,'string'));
+progressStep=1/iterations;
+h=waitbar(0,'Please wait...');
+progress=0;
 toc;
 
 disp('Iter')
@@ -126,7 +132,6 @@ end
 close(h)
 set(handles.text7,'string','Done!');
 toc;
-
 disp('Image')
 tic;
 im_Z=zeros(size(Z));
