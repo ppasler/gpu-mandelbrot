@@ -82,48 +82,51 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 disp('Init')
 tic;
-x_a=str2double(get(handles.xMin,'String'));
-x_b=str2double(get(handles.xMax,'String'));
+x_min=str2double(get(handles.xMin,'String'));
+x_max=str2double(get(handles.xMax,'String'));
 x_step=str2double(get(handles.step,'String'));
 
-y_a=str2double(get(handles.yMin,'String'));
-y_b=str2double(get(handles.yMax,'String'));
+y_min=str2double(get(handles.yMin,'String'));
+y_max=str2double(get(handles.yMax,'String'));
 y_step=str2double(get(handles.step,'String'));
 
-x=x_a:x_step:x_b;
-y=y_a:y_step:y_b;
+x=x_min:x_step:x_max;
+y=y_min:y_step:y_max;
 [X, Y]=meshgrid(x,y);
 Z=X+Y.*1i;
-toc;
-disp('Calc')
+cX = str2double(get(handles.cX,'String'));
+cY = str2double(get(handles.cY,'String'));
+conjugate = get(handles.conjugate1,'Value');
 
+toc;
+
+disp('Calc')
 tic;
 if get(handles.mandelbrot,'value')==1
-    C=str2double(get(handles.cX,'String')).*X+str2double(get(handles.cY,'String')).*Y.*1i;
+    C=cX.*X+cY.*Y.*1i;
 else
-    C=str2double(get(handles.cX,'String'))+str2double(get(handles.cY,'String'))*1i;
+    C=cX+cY*1i;
 end
-KK=str2double(get(handles.index,'string'));
-N=str2double(get(handles.iterations,'string'));
-FF=1/N;
-h=waitbar(0,'Please wait...');
-KKK=0;
+
 toc;
+
 disp('Iter')
 tic;
-for j=1:N
-    if get(handles.conjugate1,'Value')==1
-        Z=conj(Z.^KK+C);
+for j=1:iterations
+    if conjugate==1
+        Z=conj(Z.^index+C);
     else
-        Z=Z.^KK+C;
+        Z=Z.^index+C;
     end
+    % progress for label and waitbar
     set(handles.text7,'string',strcat('(',num2str(j),')'));
-    KKK=KKK+FF;
-    waitbar(KKK);
+    progress=progress+progressStep;
+    waitbar(progress);
 end
 close(h)
 set(handles.text7,'string','Done!');
 toc;
+
 disp('Image')
 tic;
 im_Z=zeros(size(Z));
