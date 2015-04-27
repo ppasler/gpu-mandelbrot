@@ -1,4 +1,15 @@
-* Programm verstehen
-* Mandelbrot / Julia verstehen
 * Grundlagen
+ * Matlab
+ * Mandelbrot / Julia
+ * GPU, CUDA, CPU
+* Programm nachvollziehen, weitere Matlab Programme analysieren
+* Dokumentation vorbereiten
 * Features überlegen
+ * Auswahl der PU (Processing Unit): CPU, GPU, CUDA
+ * Zeiterfassung / -auswertung / -vergleich (erst Text, dann Visuell)
+ * Automatischer Testablauf 
+  * Intervall Berechnung mehrerer Iteration nacheinander (10, 100, 1000 usw.)
+  * Alle PU nacheinander
+ * Einfärben des Plot
+ * Zoom
+ * Live Zeichnen (Animiert)
