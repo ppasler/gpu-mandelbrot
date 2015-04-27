@@ -80,8 +80,8 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-disp('Init')
-tic;
+disp('Calc: MANDELBROT')
+tic
 x_a=str2num(get(handles.edit3,'String'));
 x_b=str2num(get(handles.edit4,'String'));
 x_step=str2num(get(handles.edit9,'String'));
@@ -94,22 +94,20 @@ x=x_a:x_step:x_b;
 y=y_a:y_step:y_b;
 [X Y]=meshgrid(x,y);
 Z=X+Y.*1i;
-toc;
-disp('Calc')
 tic;
 if get(handles.radiobutton3,'value')==1
+    disp('Calc: MANDELBROT')
     C=str2num(get(handles.edit7,'String')).*X+str2num(get(handles.edit8,'String')).*Y.*1i;
 else
+    disp('Calc: JULIA')
     C=str2num(get(handles.edit7,'String'))+str2num(get(handles.edit8,'String'))*1i;
 end
+toc;
 KK=str2num(get(handles.edit2,'string'));
 N=str2num(get(handles.edit1,'string'));
 FF=1/N;
 h=waitbar(0,'Please wait...');
 KKK=0;
-toc;
-disp('Iter')
-tic;
 for j=1:N
     if get(handles.radiobutton1,'Value')==1
         Z=conj(Z.^KK+C);
@@ -122,9 +120,6 @@ for j=1:N
 end
 close(h)
 set(handles.text7,'string','Done!');
-toc;
-disp('Image')
-tic;
 im_Z=zeros(size(Z));
 AA=size(Z);
 MAG_Z=abs(Z);
@@ -138,7 +133,6 @@ set(h,'edgecolor','none')
 colormap([0 0 0;1 0 0;1 1 1])
 axis equal
 axis off
-toc;
 % xlim([0 2501])
 % ylim([0 2401])
 
