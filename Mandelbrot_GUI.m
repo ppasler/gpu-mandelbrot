@@ -1,4 +1,4 @@
-
+% testest
 function varargout = Mandelbrot_GUI(varargin)
 % MANDELBROT_GUI M-file for Mandelbrot_GUI.fig
 %      MANDELBROT_GUI, by itself, creates a new MANDELBROT_GUI or raises the existing
