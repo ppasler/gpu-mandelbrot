@@ -96,6 +96,7 @@ y=y_a:y_step:y_b;
 Z=X+Y.*1i;
 toc;
 disp('Calc')
+
 tic;
 if get(handles.radiobutton3,'value')==1
     C=str2num(get(handles.edit7,'String')).*X+str2num(get(handles.edit8,'String')).*Y.*1i;
