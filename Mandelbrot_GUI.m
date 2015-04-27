@@ -23,7 +23,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 20-Aug-2013 22:30:30
+% Last Modified by GUIDE v2.5 27-Apr-2015 09:33:44
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,8 +61,8 @@ guidata(hObject, handles);
 
 % UIWAIT makes Mandelbrot_GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-set(handles.radiobutton2,'value',1)
-set(handles.radiobutton3,'value',1)
+set(handles.conjugate0,'value',1)
+set(handles.mandelbrot,'value',1)
 
 % --- Outputs from this function are returned to the command line.
 function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles) 
@@ -82,29 +82,29 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 disp('Init')
 tic;
-x_a=str2num(get(handles.edit3,'String'));
-x_b=str2num(get(handles.edit4,'String'));
-x_step=str2num(get(handles.edit9,'String'));
+x_a=str2double(get(handles.edit3,'String'));
+x_b=str2double(get(handles.edit4,'String'));
+x_step=str2double(get(handles.edit9,'String'));
 
-y_a=str2num(get(handles.edit5,'String'));
-y_b=str2num(get(handles.edit6,'String'));
-y_step=str2num(get(handles.edit9,'String'));
+y_a=str2double(get(handles.edit5,'String'));
+y_b=str2double(get(handles.edit6,'String'));
+y_step=str2double(get(handles.edit9,'String'));
 
 x=x_a:x_step:x_b;
 y=y_a:y_step:y_b;
-[X Y]=meshgrid(x,y);
+[X, Y]=meshgrid(x,y);
 Z=X+Y.*1i;
 toc;
 disp('Calc')
 
 tic;
-if get(handles.radiobutton3,'value')==1
-    C=str2num(get(handles.edit7,'String')).*X+str2num(get(handles.edit8,'String')).*Y.*1i;
+if get(handles.mandelbrot,'value')==1
+    C=str2double(get(handles.edit7,'String')).*X+str2double(get(handles.edit8,'String')).*Y.*1i;
 else
-    C=str2num(get(handles.edit7,'String'))+str2num(get(handles.edit8,'String'))*1i;
+    C=str2double(get(handles.edit7,'String'))+str2double(get(handles.edit8,'String'))*1i;
 end
-KK=str2num(get(handles.edit2,'string'));
-N=str2num(get(handles.edit1,'string'));
+KK=str2double(get(handles.index,'string'));
+N=str2double(get(handles.iterations,'string'));
 FF=1/N;
 h=waitbar(0,'Please wait...');
 KKK=0;
@@ -112,7 +112,7 @@ toc;
 disp('Iter')
 tic;
 for j=1:N
-    if get(handles.radiobutton1,'Value')==1
+    if get(handles.conjugate1,'Value')==1
         Z=conj(Z.^KK+C);
     else
         Z=Z.^KK+C;
@@ -144,18 +144,18 @@ toc;
 % ylim([0 2401])
 
 
-function edit1_Callback(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function iterations_Callback(hObject, eventdata, handles)
+% hObject    handle to iterations (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit1 as text
-%        str2double(get(hObject,'String')) returns contents of edit1 as a double
+% Hints: get(hObject,'String') returns contents of iterations as text
+%        str2double(get(hObject,'String')) returns contents of iterations as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit1_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit1 (see GCBO)
+function iterations_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to iterations (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -167,18 +167,18 @@ end
 
 
 
-function edit2_Callback(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function index_Callback(hObject, eventdata, handles)
+% hObject    handle to index (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of edit2 as text
-%        str2double(get(hObject,'String')) returns contents of edit2 as a double
+% Hints: get(hObject,'String') returns contents of index as text
+%        str2double(get(hObject,'String')) returns contents of index as a double
 
 
 % --- Executes during object creation, after setting all properties.
-function edit2_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to edit2 (see GCBO)
+function index_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to index (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -280,26 +280,26 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in radiobutton1.
-function radiobutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton1 (see GCBO)
+% --- Executes on button press in conjugate1.
+function conjugate1_Callback(hObject, eventdata, handles)
+% hObject    handle to conjugate1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton1
-set(handles.radiobutton1,'value',1)
-set(handles.radiobutton2,'value',0)
+% Hint: get(hObject,'Value') returns toggle state of conjugate1
+set(handles.conjugate1,'value',1)
+set(handles.conjugate0,'value',0)
 
 
-% --- Executes on button press in radiobutton2.
-function radiobutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton2 (see GCBO)
+% --- Executes on button press in conjugate0.
+function conjugate0_Callback(hObject, eventdata, handles)
+% hObject    handle to conjugate0 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton2
-set(handles.radiobutton2,'value',1)
-set(handles.radiobutton1,'value',0)
+% Hint: get(hObject,'Value') returns toggle state of conjugate0
+set(handles.conjugate0,'value',1)
+set(handles.conjugate1,'value',0)
 
 
 
@@ -371,22 +371,22 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in radiobutton3.
-function radiobutton3_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton3 (see GCBO)
+% --- Executes on button press in mandelbrot.
+function mandelbrot_Callback(hObject, eventdata, handles)
+% hObject    handle to mandelbrot (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton3
-set(handles.radiobutton3,'value',1)
-set(handles.radiobutton4,'value',0)
+% Hint: get(hObject,'Value') returns toggle state of mandelbrot
+set(handles.mandelbrot,'value',1)
+set(handles.julia,'value',0)
 
-% --- Executes on button press in radiobutton4.
-function radiobutton4_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton4 (see GCBO)
+% --- Executes on button press in julia.
+function julia_Callback(hObject, eventdata, handles)
+% hObject    handle to julia (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton4
-set(handles.radiobutton4,'value',1)
-set(handles.radiobutton3,'value',0)
+% Hint: get(hObject,'Value') returns toggle state of julia
+set(handles.julia,'value',1)
+set(handles.mandelbrot,'value',0)
