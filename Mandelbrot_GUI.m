@@ -1,4 +1,3 @@
-% testest
 function varargout = Mandelbrot_GUI(varargin)
 % MANDELBROT_GUI M-file for Mandelbrot_GUI.fig
 %      MANDELBROT_GUI, by itself, creates a new MANDELBROT_GUI or raises the existing
@@ -23,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 28-Apr-2015 09:03:52
+% Last Modified by GUIDE v2.5 28-Apr-2015 14:10:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -63,6 +62,7 @@ guidata(hObject, handles);
 % uiwait(handles.figure1);
 set(handles.conjugate,'value',0)
 set(handles.mandelbrot,'value',1)
+set(handles.julia,'value',0)
 
 % --- Outputs from this function are returned to the command line.
 function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles) 
@@ -109,6 +109,7 @@ if get(handles.mandelbrot,'value')==1
 else
     C=cX+cY*1i;
 end
+
 index=str2double(get(handles.index,'string'));
 iterations=str2double(get(handles.iterations,'string'));
 progressStep=1/iterations;
@@ -120,6 +121,7 @@ disp('Iter')
 tic;
 for j=1:iterations
     if conjugate==1
+        % http://de.mathworks.com/help/matlab/ref/conj.html
         Z=conj(Z.^index+C);
     else
         Z=Z.^index+C;
@@ -128,26 +130,29 @@ for j=1:iterations
     progress=progress+progressStep;
     waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
 end
+waitbar(progress, h, 'Rendering image');
 close(h)
+cla;
 toc;
+
 disp('Image')
 tic;
-im_Z=zeros(size(Z));
-AA=size(Z);
+% im_Z=zeros(size(Z));
+% AA=size(Z);
 MAG_Z=abs(Z);
 MAG_Z(MAG_Z<=2)=1;
 MAG_Z(MAG_Z>2)=2;
 MAG_Z(isnan(MAG_Z))=0;
-
-cla;
-h=pcolor(MAG_Z);
-set(h,'edgecolor','none')
-colormap([0 0 0;1 0 0;1 1 1])
-axis equal
-axis off
+fig=pcolor(MAG_Z);
+set(fig,'edgecolor','none')
+colormap([0 0 0; 0 0 0; 1 1 1])
 toc;
-% xlim([0 2501])
-% ylim([0 2401])
+
+axis equal
+% x_lim = (abs(x_min)+abs(x_max))/x_step;
+% y_lim = (abs(y_min)+abs(y_max))/y_step;
+% xlim([0 x_lim])
+% ylim([0 y_lim])
 
 
 function iterations_Callback(hObject, eventdata, handles)
