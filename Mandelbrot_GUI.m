@@ -23,7 +23,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 27-Apr-2015 12:35:22
+% Last Modified by GUIDE v2.5 28-Apr-2015 09:03:52
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,7 +61,7 @@ guidata(hObject, handles);
 
 % UIWAIT makes Mandelbrot_GUI wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
-set(handles.conjugate0,'value',1)
+set(handles.conjugate,'value',0)
 set(handles.mandelbrot,'value',1)
 
 % --- Outputs from this function are returned to the command line.
@@ -96,7 +96,7 @@ y=y_min:y_step:y_max;
 Z=X+Y.*1i;
 cX = str2double(get(handles.cX,'String'));
 cY = str2double(get(handles.cY,'String'));
-conjugate = get(handles.conjugate1,'Value');
+conjugate = get(handles.conjugate,'Value');
 
 toc;
 
@@ -125,12 +125,10 @@ for j=1:iterations
         Z=Z.^index+C;
     end
     % progress for label and waitbar
-    set(handles.text7,'string',strcat('(',num2str(j),')'));
     progress=progress+progressStep;
-    waitbar(progress);
+    waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
 end
 close(h)
-set(handles.text7,'string','Done!');
 toc;
 disp('Image')
 tic;
@@ -288,27 +286,13 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in conjugate1.
-function conjugate1_Callback(hObject, eventdata, handles)
-% hObject    handle to conjugate1 (see GCBO)
+% --- Executes on button press in conjugate.
+function conjugate_Callback(hObject, eventdata, handles)
+% hObject    handle to conjugate (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of conjugate1
-set(handles.conjugate1,'value',1)
-set(handles.conjugate0,'value',0)
-
-
-% --- Executes on button press in conjugate0.
-function conjugate0_Callback(hObject, eventdata, handles)
-% hObject    handle to conjugate0 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of conjugate0
-set(handles.conjugate0,'value',1)
-set(handles.conjugate1,'value',0)
-
+% Hint: get(hObject,'Value') returns toggle state of conjugate
 
 
 function cX_Callback(hObject, eventdata, handles)
