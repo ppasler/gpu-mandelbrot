@@ -52,17 +52,17 @@ function Mandelbrot_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to Mandelbrot_GUI (see VARARGIN)
 
-% Choose default command line output for Mandelbrot_GUI
-handles.output = hObject;
+    % Choose default command line output for Mandelbrot_GUI
+    handles.output = hObject;
 
-% Update handles structure
-guidata(hObject, handles);
+    % Update handles structure
+    guidata(hObject, handles);
 
-% UIWAIT makes Mandelbrot_GUI wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
-set(handles.conjugate,'value',0)
-set(handles.mandelbrot,'value',1)
-set(handles.julia,'value',0)
+    % UIWAIT makes Mandelbrot_GUI wait for user response (see UIRESUME)
+    % uiwait(handles.figure1);
+    set(handles.conjugate,'value',0)
+    set(handles.mandelbrot,'value',1)
+    set(handles.julia,'value',0)
 
 % --- Outputs from this function are returned to the command line.
 function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles) 
@@ -72,7 +72,31 @@ function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+    varargout{1} = handles.output;
+
+% return 2 lists of values from min to max in step
+function [xGrid, yGrid] = initGrid(handles)
+    x_min=str2double(get(handles.xMin,'String'));
+    x_max=str2double(get(handles.xMax,'String'));
+    x_step=str2double(get(handles.step,'String'));
+    x=x_min:x_step:x_max;
+    
+    y_min=str2double(get(handles.yMin,'String'));
+    y_max=str2double(get(handles.yMax,'String'));
+    y_step=str2double(get(handles.step,'String'));
+    y=y_min:y_step:y_max;
+    
+    [xGrid, yGrid]=meshgrid(x,y);
+
+
+function [c] = initC(xGrid, yGrid, handles)
+    cX = str2double(get(handles.cX,'String'));
+    cY = str2double(get(handles.cY,'String'));
+    if get(handles.mandelbrot,'value')==1
+        c=cX.*xGrid+cY.*yGrid.*1i;
+    else
+    	c=cX+cY*1i;
+    end
 
 % --- MANDELBROT FORMULA ---
 % --- Executes on button press in pushbutton1.
@@ -80,52 +104,39 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 disp('Init')
-tic;
-x_min=str2double(get(handles.xMin,'String'));
-x_max=str2double(get(handles.xMax,'String'));
-x_step=str2double(get(handles.step,'String'));
+tic;  % START INIT %
 
-y_min=str2double(get(handles.yMin,'String'));
-y_max=str2double(get(handles.yMax,'String'));
-y_step=str2double(get(handles.step,'String'));
+[xGrid, yGrid]=initGrid(handles);
 
-x=x_min:x_step:x_max;
-y=y_min:y_step:y_max;
-[X, Y]=meshgrid(x,y);
-Z=X+Y.*1i;
-cX = str2double(get(handles.cX,'String'));
-cY = str2double(get(handles.cY,'String'));
+% init formula
+c=initC(xGrid, yGrid, handles);
+
+% init z
+z=xGrid+yGrid.*1i;
+
 conjugate = get(handles.conjugate,'Value');
 
-toc;
-
-disp('Calc')
-tic;
-
-
-if get(handles.mandelbrot,'value')==1
-    C=cX.*X+cY.*Y.*1i;
-else
-    C=cX+cY*1i;
-end
-
+count = ones( size(z) );
 index=str2double(get(handles.index,'string'));
 iterations=str2double(get(handles.iterations,'string'));
 progressStep=1/iterations;
 h=waitbar(0,'Please wait...');
 progress=0;
-toc;
+toc;  % END INIT %
 
-disp('Iter')
-tic;
+disp('Calculation')
+tic;  % END CALCULATION %
 for j=1:iterations
     if conjugate==1
         % http://de.mathworks.com/help/matlab/ref/conj.html
-        Z=conj(Z.^index+C);
+        z=conj(z.^index+c);
     else
-        Z=Z.^index+C;
+        z=z.^index+c;
     end
+    inside = abs( z )<=2;
+    count = count + inside;
     % progress for label and waitbar
     progress=progress+progressStep;
     waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
@@ -133,38 +144,25 @@ end
 waitbar(progress, h, 'Rendering image');
 close(h)
 cla;
-toc;
+toc; % END ITERATION %
 
-disp('Image')
-tic;
-% im_Z=zeros(size(Z));
-% AA=size(Z);
-MAG_Z=abs(Z);
-MAG_Z(MAG_Z<=2)=1;
-MAG_Z(MAG_Z>2)=2;
-MAG_Z(isnan(MAG_Z))=0;
-fig=pcolor(MAG_Z);
-set(fig,'edgecolor','none')
-colormap([0 0 0; 0 0 0; 1 1 1])
-toc;
+renderImage(count);
 
-axis equal
-% x_lim = (abs(x_min)+abs(x_max))/x_step;
-% y_lim = (abs(y_min)+abs(y_max))/y_step;
-% xlim([0 x_lim])
-% ylim([0 y_lim])
 
+
+function[] = renderImage(count)
+    disp('Image Rendering')
+    tic; % START IMAGE RENDERING%
+
+    count = log( count );
+    imagesc( count );
+    colormap([jet();flipud( jet() );0 0 0])
+    toc; % END IMAGE RENDERING%
+
+% CALLBACKS AND OTHER STUFF %
 
 function iterations_Callback(hObject, eventdata, handles)
-% hObject    handle to iterations (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of iterations as text
-%        str2double(get(hObject,'String')) returns contents of iterations as a double
-
-
-% --- Executes during object creation, after setting all properties.
 function iterations_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to iterations (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -177,15 +175,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function index_Callback(hObject, eventdata, handles)
-% hObject    handle to index (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of index as text
-%        str2double(get(hObject,'String')) returns contents of index as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function index_CreateFcn(hObject, eventdata, handles)
@@ -201,13 +191,6 @@ end
 
 
 function xMin_Callback(hObject, eventdata, handles)
-% hObject    handle to xMin (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of xMin as text
-%        str2double(get(hObject,'String')) returns contents of xMin as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function xMin_CreateFcn(hObject, eventdata, handles)
@@ -222,15 +205,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function xMax_Callback(hObject, eventdata, handles)
-% hObject    handle to xMax (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of xMax as text
-%        str2double(get(hObject,'String')) returns contents of xMax as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function xMax_CreateFcn(hObject, eventdata, handles)
@@ -245,15 +220,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function yMin_Callback(hObject, eventdata, handles)
-% hObject    handle to yMin (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of yMin as text
-%        str2double(get(hObject,'String')) returns contents of yMin as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function yMin_CreateFcn(hObject, eventdata, handles)
@@ -268,15 +235,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function yMax_Callback(hObject, eventdata, handles)
-% hObject    handle to yMax (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of yMax as text
-%        str2double(get(hObject,'String')) returns contents of yMax as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function yMax_CreateFcn(hObject, eventdata, handles)
@@ -291,23 +250,9 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in conjugate.
 function conjugate_Callback(hObject, eventdata, handles)
-% hObject    handle to conjugate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of conjugate
-
 
 function cX_Callback(hObject, eventdata, handles)
-% hObject    handle to cX (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of cX as text
-%        str2double(get(hObject,'String')) returns contents of cX as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function cX_CreateFcn(hObject, eventdata, handles)
@@ -322,15 +267,7 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-
 function cY_Callback(hObject, eventdata, handles)
-% hObject    handle to cY (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of cY as text
-%        str2double(get(hObject,'String')) returns contents of cY as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function cY_CreateFcn(hObject, eventdata, handles)
@@ -347,13 +284,6 @@ end
 
 
 function step_Callback(hObject, eventdata, handles)
-% hObject    handle to step (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of step as text
-%        str2double(get(hObject,'String')) returns contents of step as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function step_CreateFcn(hObject, eventdata, handles)
