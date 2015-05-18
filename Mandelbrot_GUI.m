@@ -22,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 28-Apr-2015 14:10:39
+% Last Modified by GUIDE v2.5 18-May-2015 16:29:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -105,61 +105,81 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+% prepare tracking of progress
 disp('Init')
 tic;  % START INIT %
 
+% initialize variables for calculation
 [xGrid, yGrid]=initGrid(handles);
-
-% init formula
-c=initC(xGrid, yGrid, handles);
-
-% init z
-z=xGrid+yGrid.*1i;
-
-conjugate = get(handles.conjugate,'Value');
-
+c=initC(xGrid, yGrid, handles); % init formula
+z=xGrid+yGrid.*1i; % init z
 count = ones( size(z) );
+
+% get relevant calculation values from GUI
+conjugate = get(handles.conjugate,'Value');
 index=str2double(get(handles.index,'string'));
 iterations=str2double(get(handles.iterations,'string'));
+
+% end and prepare tracking of progress>
 progressStep=1/iterations;
 h=waitbar(0,'Please wait...');
 progress=0;
 toc;  % END INIT %
-
 disp('Calculation')
 tic;  % END CALCULATION %
+
+% calculate the set with the defined number of iterations
 for j=1:iterations
+    % calculate with conjugation, if set
+    % more information: http://de.mathworks.com/help/matlab/ref/conj.html
     if conjugate==1
-        % http://de.mathworks.com/help/matlab/ref/conj.html
         z=conj(z.^index+c);
     else
         z=z.^index+c;
     end
+    
     inside = abs( z )<=2;
     count = count + inside;
-    % progress for label and waitbar
+    
+    % track progress for label and waitbar
     progress=progress+progressStep;
     waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
 end
+
+% 
 waitbar(progress, h, 'Rendering image');
-close(h)
+close(h);
 cla;
 toc; % END ITERATION %
 
-renderImage(count);
+renderImage(count); % image rendering of 
 
 
-
-function[] = renderImage(count)
+% function for image rendedering
+function[] = renderImage(count, style)
     disp('Image Rendering')
     tic; % START IMAGE RENDERING%
 
     count = log( count );
     imagesc( count );
-    colormap([jet();flipud( jet() );0 0 0])
+    
+    % coloring of the image with different styles
+    switch(style)
+        case 1 % jet color vector
+            colormap([jet();flipud( jet() );0 0 0]); 
+        case 2 %hsv color vector
+            colormap([hsv();flipud( hsv() );0 0 0]);
+        otherwise
+    end
+    
     toc; % END IMAGE RENDERING%
 
-% CALLBACKS AND OTHER STUFF %
+    
+    
+    
+%% GUI element functions/callbacks
+%--------------------------------------
+%--------------------------------------
 
 function iterations_Callback(hObject, eventdata, handles)
 
@@ -317,3 +337,48 @@ function julia_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of julia
 set(handles.julia,'value',1)
 set(handles.mandelbrot,'value',0)
+
+
+% --- Executes on button press in styleComputationCpu.
+function styleComputationCpu_Callback(hObject, eventdata, handles)
+% hObject    handle to styleComputationCpu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleComputationCpu
+
+
+% --- Executes on button press in styleComputationGpu1.
+function styleComputationGpu1_Callback(hObject, eventdata, handles)
+% hObject    handle to styleComputationGpu1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleComputationGpu1
+
+
+% --- Executes on button press in styleComputationGpu2.
+function styleComputationGpu2_Callback(hObject, eventdata, handles)
+% hObject    handle to styleComputationGpu2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleComputationGpu2
+
+
+% --- Executes on button press in styleComputationGpu3.
+function styleComputationGpu3_Callback(hObject, eventdata, handles)
+% hObject    handle to styleComputationGpu3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleComputationGpu3
+
+
+% --- Executes on button press in radiobutton11.
+function radiobutton11_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton11 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton11
