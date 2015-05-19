@@ -63,6 +63,10 @@ function Mandelbrot_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.conjugate,'value',0)
     set(handles.mandelbrot,'value',1)
     set(handles.julia,'value',0)
+    set(handles.styleComputationCpu,'value',1);
+    set(handles.styleComputationGpu1,'value',0);
+    set(handles.styleComputationGpu2,'value',0);
+    set(handles.styleComputationGpu3,'value',0);
 
 % --- Outputs from this function are returned to the command line.
 function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles) 
@@ -74,6 +78,23 @@ function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
     varargout{1} = handles.output;
 
+    
+% return 2 lists of values from min to max in step
+function [xGrid, yGrid] = initGridGPU(handles)
+    x_min=str2double(get(handles.xMin,'String'));
+    x_max=str2double(get(handles.xMax,'String'));
+    x_step=str2double(get(handles.step,'String'));
+    x_size = (x_max-x_min) / x_step;
+    x=gpuArray.linspace(x_min, x_max, x_size);
+    
+    y_min=str2double(get(handles.yMin,'String'));
+    y_max=str2double(get(handles.yMax,'String'));
+    y_step=str2double(get(handles.step,'String'));
+    y_size = (y_max-y_min) / y_step;
+    y=gpuArray.linspace(y_min, y_max, y_size);
+    
+    [xGrid, yGrid]=meshgrid(x,y); 
+    
 % return 2 lists of values from min to max in step
 function [xGrid, yGrid] = initGrid(handles)
     x_min=str2double(get(handles.xMin,'String'));
@@ -89,6 +110,7 @@ function [xGrid, yGrid] = initGrid(handles)
     [xGrid, yGrid]=meshgrid(x,y);
 
 
+    
 function [c] = initC(xGrid, yGrid, handles)
     cX = str2double(get(handles.cX,'String'));
     cY = str2double(get(handles.cY,'String'));
@@ -110,7 +132,16 @@ disp('Init')
 tic;  % START INIT %
 
 % initialize variables for calculation
-[xGrid, yGrid]=initGrid(handles);
+if(get(handles.styleComputationCpu,'value') == 1)
+    disp('using cpu');
+    [xGrid, yGrid]=initGrid(handles);
+elseif(get(handles.styleComputationGpu1,'value') == 1)
+    disp('using gpu');
+    [xGrid, yGrid]=initGridGPU(handles);
+else
+    [xGrid, yGrid]=initGrid(handles);
+end
+    
 c=initC(xGrid, yGrid, handles); % init formula
 z=xGrid+yGrid.*1i; % init z
 count = ones( size(z) );
@@ -152,7 +183,7 @@ close(h);
 cla;
 toc; % END ITERATION %
 
-renderImage(count); % image rendering of 
+renderImage(count, 1); % image rendering of 
 
 
 % function for image rendedering
@@ -346,7 +377,10 @@ function styleComputationCpu_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of styleComputationCpu
-
+set(handles.styleComputationCpu,'value',1);
+set(handles.styleComputationGpu1,'value',0);
+set(handles.styleComputationGpu2,'value',0);
+set(handles.styleComputationGpu3,'value',0);
 
 % --- Executes on button press in styleComputationGpu1.
 function styleComputationGpu1_Callback(hObject, eventdata, handles)
@@ -355,7 +389,10 @@ function styleComputationGpu1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of styleComputationGpu1
-
+set(handles.styleComputationCpu,'value',0);
+set(handles.styleComputationGpu1,'value',1);
+set(handles.styleComputationGpu2,'value',0);
+set(handles.styleComputationGpu3,'value',0);
 
 % --- Executes on button press in styleComputationGpu2.
 function styleComputationGpu2_Callback(hObject, eventdata, handles)
@@ -364,7 +401,10 @@ function styleComputationGpu2_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of styleComputationGpu2
-
+set(handles.styleComputationCpu,'value',0);
+set(handles.styleComputationGpu1,'value',0);
+set(handles.styleComputationGpu2,'value',1);
+set(handles.styleComputationGpu3,'value',0);
 
 % --- Executes on button press in styleComputationGpu3.
 function styleComputationGpu3_Callback(hObject, eventdata, handles)
@@ -373,12 +413,8 @@ function styleComputationGpu3_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of styleComputationGpu3
+set(handles.styleComputationCpu,'value',0);
+set(handles.styleComputationGpu1,'value',0);
+set(handles.styleComputationGpu2,'value',0);
+set(handles.styleComputationGpu3,'value',1);
 
-
-% --- Executes on button press in radiobutton11.
-function radiobutton11_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton11 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobutton11
