@@ -144,11 +144,8 @@ elseif(get(handles.styleComputationGpu3,'value') == 1)
     disp('using CUDA');
     [xGrid, yGrid]=initGridGPU(handles);
     % Load the kernel
-    cudaFilename = 'pctdemo_processMandelbrotElement.cu';
-    ptxFilename = ['pctdemo_processMandelbrotElement.',parallel.gpu.ptxext];
-    % ptxFilename = 'pctdemo_processMandelbrotElement.ptx';
-
-    disp(ptxFilename);
+    cudaFilename = 'processMandelbrotElement.cu';
+    ptxFilename = 'processMandelbrotElement.ptx';
     kernel = parallel.gpu.CUDAKernel( ptxFilename, cudaFilename );
 else
     [xGrid, yGrid]=initGrid(handles);
