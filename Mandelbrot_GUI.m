@@ -140,6 +140,16 @@ elseif(get(handles.styleComputationGpu1,'value') == 1)
 elseif(get(handles.styleComputationGpu2,'value') == 1)
     disp('using arrayFun');
     [xGrid, yGrid]=initGridGPU(handles);
+elseif(get(handles.styleComputationGpu3,'value') == 1)
+    disp('using CUDA');
+    [xGrid, yGrid]=initGridGPU(handles);
+    % Load the kernel
+    cudaFilename = 'pctdemo_processMandelbrotElement.cu';
+    ptxFilename = ['pctdemo_processMandelbrotElement.',parallel.gpu.ptxext];
+    % ptxFilename = 'pctdemo_processMandelbrotElement.ptx';
+
+    disp(ptxFilename);
+    kernel = parallel.gpu.CUDAKernel( ptxFilename, cudaFilename );
 else
     [xGrid, yGrid]=initGrid(handles);
 end
@@ -168,7 +178,22 @@ tic;  % END CALCULATION %
 if(get(handles.styleComputationGpu2,'value') == 1)
     count = arrayfun( @processMandelbrotElement, ...
                   xGrid, yGrid, iterations);
-% use 
+
+% use CUDA
+elseif(get(handles.styleComputationGpu3,'value') == 1)              
+    % Make sure we have sufficient blocks to cover all of the locations
+    numElements = numel( xGrid );
+    kernel.ThreadBlockSize = [kernel.MaxThreadsPerBlock,1,1];
+    kernel.GridSize = [ceil(numElements/kernel.MaxThreadsPerBlock),1];
+
+    % Call the kernel
+    count = zeros( size(xGrid), 'gpuArray' );
+    count = feval( kernel, count, xGrid, yGrid, iterations, numElements );
+
+    % Show
+    count = gather( count ); % Fetch the data back from the GPU              
+
+% use simple 
 else    
     % calculate the set with the defined number of iterations
     for j=1:iterations
