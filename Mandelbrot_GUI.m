@@ -128,8 +128,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % prepare tracking of progress
-disp('Init')
-tic;  % START INIT %
+% START INIT %
 
 % initialize variables for calculation
 if(get(handles.styleComputationCpu,'value') == 1)
@@ -137,6 +136,9 @@ if(get(handles.styleComputationCpu,'value') == 1)
     [xGrid, yGrid]=initGrid(handles);
 elseif(get(handles.styleComputationGpu1,'value') == 1)
     disp('using gpu');
+    [xGrid, yGrid]=initGridGPU(handles);
+elseif(get(handles.styleComputationGpu2,'value') == 1)
+    disp('using arrayFun');
     [xGrid, yGrid]=initGridGPU(handles);
 else
     [xGrid, yGrid]=initGrid(handles);
@@ -155,41 +157,50 @@ iterations=str2double(get(handles.iterations,'string'));
 progressStep=1/iterations;
 h=waitbar(0,'Please wait...');
 progress=0;
-toc;  % END INIT %
+
+% END INIT %
+
+
 disp('Calculation')
 tic;  % END CALCULATION %
 
-% calculate the set with the defined number of iterations
-for j=1:iterations
-    % calculate with conjugation, if set
-    % more information: http://de.mathworks.com/help/matlab/ref/conj.html
-    if conjugate==1
-        z=conj(z.^index+c);
-    else
-        z=z.^index+c;
+% use array fun
+if(get(handles.styleComputationGpu2,'value') == 1)
+    count = arrayfun( @processMandelbrotElement, ...
+                  xGrid, yGrid, iterations);
+% use 
+else    
+    % calculate the set with the defined number of iterations
+    for j=1:iterations
+        % calculate with conjugation, if set
+        % more information: http://de.mathworks.com/help/matlab/ref/conj.html
+        if conjugate==1
+            z=conj(z.^index+c);
+        else
+            z=z.^index+c;
+        end
+
+        inside = abs( z )<=2;
+        count = count + inside;
+
+        % track progress for label and waitbar
+        progress=progress+progressStep;
+        waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
     end
-    
-    inside = abs( z )<=2;
-    count = count + inside;
-    
-    % track progress for label and waitbar
-    progress=progress+progressStep;
-    waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
 end
 
-% 
+toc;
 waitbar(progress, h, 'Rendering image');
 close(h);
 cla;
-toc; % END ITERATION %
+% END ITERATION %
 
 renderImage(count, 1); % image rendering of 
 
 
 % function for image rendedering
 function[] = renderImage(count, style)
-    disp('Image Rendering')
-    tic; % START IMAGE RENDERING%
+    % START IMAGE RENDERING%
 
     count = log( count );
     imagesc( count );
@@ -203,7 +214,7 @@ function[] = renderImage(count, style)
         otherwise
     end
     
-    toc; % END IMAGE RENDERING%
+    % END IMAGE RENDERING%
 
     
     
