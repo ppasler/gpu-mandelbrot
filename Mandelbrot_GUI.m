@@ -78,48 +78,8 @@ function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
     varargout{1} = handles.output;
 
+   
     
-% return 2 lists of values from min to max in step
-function [xGrid, yGrid] = initGridGPU(handles)
-    x_min=str2double(get(handles.xMin,'String'));
-    x_max=str2double(get(handles.xMax,'String'));
-    x_step=str2double(get(handles.step,'String'));
-    x_size = (x_max-x_min) / x_step;
-    x=gpuArray.linspace(x_min, x_max, x_size);
-    
-    y_min=str2double(get(handles.yMin,'String'));
-    y_max=str2double(get(handles.yMax,'String'));
-    y_step=str2double(get(handles.step,'String'));
-    y_size = (y_max-y_min) / y_step;
-    y=gpuArray.linspace(y_min, y_max, y_size);
-    
-    [xGrid, yGrid]=meshgrid(x,y); 
-    
-% return 2 lists of values from min to max in step
-function [xGrid, yGrid] = initGrid(handles)
-    x_min=str2double(get(handles.xMin,'String'));
-    x_max=str2double(get(handles.xMax,'String'));
-    x_step=str2double(get(handles.step,'String'));
-    x=x_min:x_step:x_max;
-    
-    y_min=str2double(get(handles.yMin,'String'));
-    y_max=str2double(get(handles.yMax,'String'));
-    y_step=str2double(get(handles.step,'String'));
-    y=y_min:y_step:y_max;
-    
-    [xGrid, yGrid]=meshgrid(x,y);
-
-
-    
-function [c] = initC(xGrid, yGrid, handles)
-    cX = str2double(get(handles.cX,'String'));
-    cY = str2double(get(handles.cY,'String'));
-    if get(handles.mandelbrot,'value')==1
-        c=cX.*xGrid+cY.*yGrid.*1i;
-    else
-    	c=cX+cY*1i;
-    end
-
 % --- MANDELBROT FORMULA ---
 % --- Executes on button press in pushbutton1.
 function pushbutton1_Callback(hObject, eventdata, handles)
@@ -129,31 +89,11 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 
 % prepare tracking of progress
 % START INIT %
+grid = GridProvider;
+[xGrid, yGrid] = getGrid(grid, handles);
 
-% initialize variables for calculation
-if(get(handles.styleComputationCpu,'value') == 1)
-    disp('using cpu');
-    [xGrid, yGrid]=initGrid(handles);
-elseif(get(handles.styleComputationGpu1,'value') == 1)
-    disp('using gpu');
-    [xGrid, yGrid]=initGridGPU(handles);
-elseif(get(handles.styleComputationGpu2,'value') == 1)
-    disp('using arrayFun');
-    [xGrid, yGrid]=initGridGPU(handles);
-elseif(get(handles.styleComputationGpu3,'value') == 1)
-    disp('using CUDA');
-    [xGrid, yGrid]=initGridGPU(handles);
-    % Load the kernel
-    cudaFilename = 'processMandelbrotElement.cu';
-    ptxFilename = 'processMandelbrotElement.ptx';
-    kernel = parallel.gpu.CUDAKernel( ptxFilename, cudaFilename );
-else
-    [xGrid, yGrid]=initGrid(handles);
-end
-    
-c=initC(xGrid, yGrid, handles); % init formula
-z=xGrid+yGrid.*1i; % init z
-count = ones( size(z) );
+formula = FormulaProvider;
+[c, z, count] = getFormula(formula, xGrid, yGrid, handles);
 
 % get relevant calculation values from GUI
 conjugate = get(handles.conjugate,'Value');
@@ -177,7 +117,11 @@ if(get(handles.styleComputationGpu2,'value') == 1)
                   xGrid, yGrid, iterations);
 
 % use CUDA
-elseif(get(handles.styleComputationGpu3,'value') == 1)              
+elseif(get(handles.styleComputationGpu3,'value') == 1)
+    % Load the kernel
+    cudaFilename = 'processMandelbrotElement.cu';
+    ptxFilename = 'processMandelbrotElement.ptx';
+    kernel = parallel.gpu.CUDAKernel( ptxFilename, cudaFilename );
     % Make sure we have sufficient blocks to cover all of the locations
     numElements = numel( xGrid );
     kernel.ThreadBlockSize = [kernel.MaxThreadsPerBlock,1,1];
@@ -230,15 +174,13 @@ function[] = renderImage(count, style)
     % coloring of the image with different styles
     switch(style)
         case 1 % jet color vector
-            colormap([jet();flipud( jet() );0 0 0]); 
+            map = colormap([jet();flipud( jet() );0 0 0]); 
         case 2 %hsv color vector
-            colormap([hsv();flipud( hsv() );0 0 0]);
+            map = colormap([hsv();flipud( hsv() );0 0 0]);
         otherwise
     end
-    
-    % END IMAGE RENDERING%
-
-    
+    %imwrite(map, 'img.jpg', 'jpg');
+    % END IMAGE RENDERING% 
     
     
 %% GUI element functions/callbacks
