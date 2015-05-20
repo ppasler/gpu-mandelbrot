@@ -90,7 +90,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % prepare tracking of progress
 % START INIT %
 grid = GridProvider;
-[xGrid, yGrid] = getGrid(grid, handles);
+[xGrid, yGrid, methodString] = getGrid(grid, handles);
 
 formula = FormulaProvider;
 [c, z, count] = getFormula(formula, xGrid, yGrid, handles);
@@ -108,8 +108,7 @@ progress=0;
 % END INIT %
 
 
-disp('Calculation')
-tic;  % END CALCULATION %
+t = tic();  % START CALCULATION %
 
 % use array fun
 if(get(handles.styleComputationGpu2,'value') == 1)
@@ -155,11 +154,12 @@ else
     end
 end
 
-toc;
+calcTime = toc(t);
+fprintf( '%1.2f secs for calculation with %s\n', calcTime, methodString);
 waitbar(progress, h, 'Rendering image');
 close(h);
 cla;
-% END ITERATION %
+% END CALCULATION %
 
 renderImage(count, 1); % image rendering of 
 
@@ -179,7 +179,7 @@ function[] = renderImage(count, style)
             map = colormap([hsv();flipud( hsv() );0 0 0]);
         otherwise
     end
-    %imwrite(map, 'img.jpg', 'jpg');
+    imwrite(count, 'img.png', 'png');
     % END IMAGE RENDERING% 
     
     

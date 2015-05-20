@@ -1,20 +1,21 @@
 classdef GridProvider
     methods
-        function [xGrid, yGrid] = getGrid(obj, handles)
+        function [xGrid, yGrid, methodString] = getGrid(obj, handles)
             % initialize variables for calculation
             if(get(handles.styleComputationCpu,'value') == 1)
-                disp('using cpu');
+                methodString = 'CPU';
                 [xGrid, yGrid]=initGrid(obj, handles);
             elseif(get(handles.styleComputationGpu1,'value') == 1)
-                disp('using gpu');
+                methodString = 'GPU simple';
                 [xGrid, yGrid]=initGridGPU(obj, handles);
             elseif(get(handles.styleComputationGpu2,'value') == 1)
-                disp('using arrayFun');
+                methodString = 'GPU arrayFun';
                 [xGrid, yGrid]=initGridGPU(obj, handles);
             elseif(get(handles.styleComputationGpu3,'value') == 1)
-                disp('using CUDA');
+                methodString = 'CUDA';
                 [xGrid, yGrid]=initGridGPU(obj, handles);
             else
+                methodString = 'undefined (CPU)';
                 [xGrid, yGrid]=initGrid(obj, handles);
             end
         end
