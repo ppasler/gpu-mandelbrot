@@ -22,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 18-May-2015 16:29:46
+% Last Modified by GUIDE v2.5 20-May-2015 12:06:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -161,23 +161,22 @@ close(h);
 cla;
 % END CALCULATION %
 
-renderImage(count, 1); % image rendering of 
+renderImage(count, 1, handles); % image rendering of 
 
 
 % function for image rendedering
-function[] = renderImage(count, style)
+function[] = renderImage(count, style, handles)
     % START IMAGE RENDERING%
 
     count = log( count );
     imagesc( count );
     
     % coloring of the image with different styles
-    switch(style)
-        case 1 % jet color vector
+    % jet color vector
+    if get(handles.styleDrawingJet,'Value')
             map = colormap([jet();flipud( jet() );0 0 0]); 
-        case 2 %hsv color vector
+    elseif get(handles.styleDrawingHsv,'Value') %hsv color vector
             map = colormap([hsv();flipud( hsv() );0 0 0]);
-        otherwise
     end
     imwrite(count, 'img.png', 'png');
     % END IMAGE RENDERING% 
@@ -356,6 +355,8 @@ set(handles.styleComputationCpu,'value',1);
 set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',0);
+set(handles.styleComputationAll,'value',1);
+
 
 % --- Executes on button press in styleComputationGpu1.
 function styleComputationGpu1_Callback(hObject, eventdata, handles)
@@ -368,6 +369,8 @@ set(handles.styleComputationCpu,'value',0);
 set(handles.styleComputationGpu1,'value',1);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',0);
+set(handles.styleComputationAll,'value',0);
+
 
 % --- Executes on button press in styleComputationGpu2.
 function styleComputationGpu2_Callback(hObject, eventdata, handles)
@@ -380,6 +383,8 @@ set(handles.styleComputationCpu,'value',0);
 set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',1);
 set(handles.styleComputationGpu3,'value',0);
+set(handles.styleComputationAll,'value',0);
+
 
 % --- Executes on button press in styleComputationGpu3.
 function styleComputationGpu3_Callback(hObject, eventdata, handles)
@@ -392,4 +397,41 @@ set(handles.styleComputationCpu,'value',0);
 set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',1);
+set(handles.styleComputationAll,'value',0);
 
+
+% --- Executes on button press in styleComputationAll.
+function styleComputationAll_Callback(hObject, eventdata, handles)
+% hObject    handle to styleComputationAll (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleComputationAll
+set(handles.styleComputationCpu,'value',0);
+set(handles.styleComputationGpu1,'value',0);
+set(handles.styleComputationGpu2,'value',0);
+set(handles.styleComputationGpu3,'value',0);
+set(handles.styleComputationAll,'value',1);
+
+
+% --- Executes on button press in styleDrawingJet.
+function styleDrawingJet_Callback(hObject, eventdata, handles)
+% hObject    handle to styleDrawingJet (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleDrawingJet
+
+set(handles.styleDrawingJet,'value',1);
+set(handles.styleDrawingHsv,'value',0);
+
+% --- Executes on button press in styleDrawingHsv.
+function styleDrawingHsv_Callback(hObject, eventdata, handles)
+% hObject    handle to styleDrawingHsv (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleDrawingHsv
+
+set(handles.styleDrawingJet,'value',0);
+set(handles.styleDrawingHsv,'value',1);
