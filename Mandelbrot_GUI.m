@@ -167,9 +167,14 @@ renderImage(count, 1, handles); % image rendering of
 % function for image rendedering
 function[] = renderImage(count, style, handles)
     % START IMAGE RENDERING%
-
+    %handles.plotImage; %select plotImage as current plot
     count = log( count );
     imagesc( count );
+    %handles.plotImage.imagesc(count);
+    
+    % --- testing section
+    %handles.plotImage(Visible, 'on');
+    %set(handles.plotImage,'XDataSource', 'x');
     
     % coloring of the image with different styles
     % jet color vector
