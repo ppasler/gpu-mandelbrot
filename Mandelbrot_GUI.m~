@@ -86,34 +86,30 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-iterations = str2double(get(handles.iterations,'string'));
+t = tic();  % START CALCULATION %
 
 % use simple gpuArray
 if(get(handles.styleComputationGpu1,'value') == 1)
-    calculator = GPUCalculator(handles);
-    methodString = 'simple GPU';
-    
+    gpu = GPUCalculator(handles);
+    count = calc(gpu, iterations);
+    methodString = 'simpl';
 % use array fun
 elseif(get(handles.styleComputationGpu2,'value') == 1)
-    calculator = GPUArrayFunCalculator(handles);
-    methodString = 'ArrayFun GPU';
-
+    gpuaf = GPUArrayFunCalculator(handles);
+    count = calc(gpuaf, iterations);           
 % use CUDA
 elseif(get(handles.styleComputationGpu3,'value') == 1)
-    calculator = CUDACalculator(handles);
-    methodString = 'CUDA';
-    
+    cuda = CUDACalculator(handles);
+    count = calc(cuda, iterations);           
 % use simple 
 else
-    calculator = CPUCalculator(handles);
-    methodString = 'simple CPU';
+    cpu = CPUCalculator(handles);
+    count = calc(cpu, iterations);
 end
 
-t = tic();  % START CALCULATION %
-count = calc(calculator, iterations);
 calcTime = toc(t);
-
 fprintf( '%1.2f secs for calculation with %s\n', calcTime, methodString);
+cla;
 % END CALCULATION %
 
 renderImage(count, 1, handles); % image rendering of 
