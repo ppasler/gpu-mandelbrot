@@ -60,7 +60,6 @@ function Mandelbrot_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
 
     % UIWAIT makes Mandelbrot_GUI wait for user response (see UIRESUME)
     % uiwait(handles.figure1);
-    set(handles.conjugate,'value',0)
     set(handles.mandelbrot,'value',1)
     set(handles.julia,'value',0)
     set(handles.styleComputationCpu,'value',1);
@@ -92,12 +91,7 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 grid = GridProvider;
 [xGrid, yGrid, methodString] = getGrid(grid, handles);
 
-formula = FormulaProvider;
-[c, z, count] = getFormula(formula, xGrid, yGrid, handles);
-
 % get relevant calculation values from GUI
-conjugate = get(handles.conjugate,'Value');
-index=str2double(get(handles.index,'string'));
 iterations=str2double(get(handles.iterations,'string'));
 
 % end and prepare tracking of progress>
@@ -135,22 +129,18 @@ elseif(get(handles.styleComputationGpu3,'value') == 1)
 
 % use simple 
 else    
+    z0 = xGrid + 1i*yGrid;
     % calculate the set with the defined number of iterations
-    for j=1:iterations
-        % calculate with conjugation, if set
-        % more information: http://de.mathworks.com/help/matlab/ref/conj.html
-        if conjugate==1
-            z=conj(z.^index+c);
-        else
-            z=z.^index+c;
-        end
-
+    count = ones( size(z0) );
+    z = z0;
+    for n = 0:iterations
+        z = z.*z + z0;
         inside = abs( z )<=2;
         count = count + inside;
 
         % track progress for label and waitbar
         progress=progress+progressStep;
-        waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
+        waitbar(progress, h, strcat('',num2str(n),{' of '},num2str(iterations),{' iterations done'}));
     end
 end
 
@@ -183,7 +173,7 @@ function[] = renderImage(count, style, handles)
     elseif get(handles.styleDrawingHsv,'Value') %hsv color vector
             map = colormap([hsv();flipud( hsv() );0 0 0]);
     end
-    imwrite(count, 'img.png', 'png');
+    %imwrite(count, 'img.png', 'png');
     % END IMAGE RENDERING% 
     
     
@@ -279,8 +269,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
-function conjugate_Callback(hObject, eventdata, handles)
 
 function cX_Callback(hObject, eventdata, handles)
 
