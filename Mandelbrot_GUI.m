@@ -91,8 +91,12 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 grid = GridProvider;
 [xGrid, yGrid, methodString] = getGrid(grid, handles);
 
+formula = FormulaProvider;
+[c, z, count] = getFormula(formula, xGrid, yGrid, handles);
+
 % get relevant calculation values from GUI
 iterations=str2double(get(handles.iterations,'string'));
+index=str2double(get(handles.index,'string'));
 
 % end and prepare tracking of progress>
 progressStep=1/iterations;
@@ -128,19 +132,16 @@ elseif(get(handles.styleComputationGpu3,'value') == 1)
     count = gather( count ); % Fetch the data back from the GPU              
 
 % use simple 
-else    
-    z0 = xGrid + 1i*yGrid;
-    % calculate the set with the defined number of iterations
-    count = ones( size(z0) );
-    z = z0;
-    for n = 0:iterations
-        z = z.*z + z0;
+else
+    for j=1:iterations
+        z=z.^index+c;
+
         inside = abs( z )<=2;
         count = count + inside;
 
         % track progress for label and waitbar
         progress=progress+progressStep;
-        waitbar(progress, h, strcat('',num2str(n),{' of '},num2str(iterations),{' iterations done'}));
+        waitbar(progress, h, strcat('',num2str(j),{' of '},num2str(iterations),{' iterations done'}));
     end
 end
 
@@ -348,7 +349,7 @@ set(handles.styleComputationCpu,'value',1);
 set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',0);
-set(handles.styleComputationAll,'value',1);
+set(handles.styleComputationAll,'value',0);
 
 
 % --- Executes on button press in styleComputationGpu1.
