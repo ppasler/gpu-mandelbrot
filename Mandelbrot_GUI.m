@@ -113,7 +113,7 @@ t = tic();  % START CALCULATION %
 count = calc(calculator, iterations);
 calcTime = toc(t);
 
-setName = 'mandebrot';
+setName = 'Mandelbrot';
 if(get(handles.mandelbrot,'value') == 0)
     setName = 'julia';
 end
@@ -121,30 +121,53 @@ end
 fprintf( '%1.2f secs for calculating %s set with %s\n', calcTime, setName, methodString);
 % END CALCULATION %
 
-renderImage(count, 1, handles); % image rendering of 
+% --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]
+vTime = [calcTime 0.9 0.8 ; 0.1 0.09 0.08 ; 0.05 0.04 0.035 ; 0.001 0.0009 0.0008];
+% --- test preparation end
+
+% rendering of the visualization and the benchmark plot
+renderImage(count, handles);
+renderBenchmarkPlot(vTime, handles);
 
 
 % function for image rendedering
-function[] = renderImage(count, style, handles)
+function[] = renderImage(count, handles)
     % START IMAGE RENDERING%
-    %handles.plotImage; %select plotImage as current plot
+    % --- image rendering: selecting right plot and assign log of result
+    axes(handles.plotImage);
     count = log( count );
     imagesc( count );
-    %handles.plotImage.imagesc(count);
     
-    % --- testing section
-    %handles.plotImage(Visible, 'on');
-    %set(handles.plotImage,'XDataSource', 'x');
-    
-    % coloring of the image with different styles
-    % jet color vector
-    if get(handles.styleDrawingJet,'Value')
-            map = colormap([jet();flipud( jet() );0 0 0]); 
+    % --- coloring of the image with different styles
+    if get(handles.styleDrawingJet,'Value') % jet color vector
+            colormap([jet();flipud( jet() );0 0 0]); 
     elseif get(handles.styleDrawingHsv,'Value') %hsv color vector
-            map = colormap([hsv();flipud( hsv() );0 0 0]);
+            colormap([hsv();flipud( hsv() );0 0 0]);
     end
-    %imwrite(count, 'img.png', 'png');
-    % END IMAGE RENDERING% 
+    
+    % --- save the image in the local directory
+    % imwrite(count, 'img.png', 'png');
+    
+    % END IMAGE RENDERING%
+    
+    
+    
+function[] = renderBenchmarkPlot(vTime, handles)
+    % START IMAGE RENDERING%
+    axes(handles.plotResults); %select plotImage as current plot
+    
+    % --- create a bar chart
+    %caption = ['CPU', 'GPU', 'GPU FunArray', 'CUDA']; 
+    bar(vTime);
+    set(gca,'XTickLabel',{'CPU', 'GPU', 'FunArray', 'CUDA'});
+    set(gca,'YScale','log');
+    ylabel('time [sec]');
+    
+    %axes(handles.plotResults);
+    colormap (handles.plotResults, summer);
+    %handles.Textresult = 'test';
+    
+    % END IMAGE RENDERING%
     
     
 %% GUI element functions/callbacks
