@@ -47,36 +47,31 @@
 	.reg .f64 	%fd<20>;
 
 
-	ld.param.f64 	%fd6, [_Z12doIterationsddddj_param_0];
-	ld.param.f64 	%fd7, [_Z12doIterationsddddj_param_1];
-	ld.param.f64 	%fd8, [_Z12doIterationsddddj_param_2];
-	ld.param.f64 	%fd9, [_Z12doIterationsddddj_param_3];
+	ld.param.f64 	%fd9, [_Z12doIterationsddddj_param_0];
+	ld.param.f64 	%fd10, [_Z12doIterationsddddj_param_1];
+	ld.param.f64 	%fd11, [_Z12doIterationsddddj_param_2];
+	ld.param.f64 	%fd12, [_Z12doIterationsddddj_param_3];
 	ld.param.u32 	%r4, [_Z12doIterationsddddj_param_4];
-	add.f64 	%fd1, %fd9, %fd9;
+	mul.f64 	%fd19, %fd11, %fd9;
+	mul.f64 	%fd18, %fd12, %fd10;
+	add.f64 	%fd3, %fd12, %fd12;
 	mov.u32 	%r6, 0;
-	mov.f64 	%fd18, %fd7;
-	mov.f64 	%fd19, %fd6;
 
 BB1_1:
-	mov.f64 	%fd3, %fd19;
-	mov.f64 	%fd2, %fd18;
-	mul.f64 	%fd10, %fd2, %fd2;
-	fma.rn.f64 	%fd11, %fd3, %fd3, %fd10;
-	setp.gtu.f64	%p1, %fd11, 0d4010000000000000;
+	mov.f64 	%fd5, %fd19;
+	mul.f64 	%fd6, %fd18, %fd18;
+	fma.rn.f64 	%fd13, %fd5, %fd5, %fd6;
+	setp.gtu.f64	%p1, %fd13, 0d4010000000000000;
 	@%p1 bra 	BB1_3;
 
 	add.s32 	%r6, %r6, 1;
-	mul.f64 	%fd12, %fd3, %fd8;
-	mul.f64 	%fd13, %fd12, %fd3;
-	mul.f64 	%fd14, %fd2, %fd9;
-	mul.f64 	%fd15, %fd14, %fd2;
-	sub.f64 	%fd16, %fd13, %fd15;
-	add.f64 	%fd4, %fd16, %fd6;
-	mul.f64 	%fd17, %fd1, %fd3;
-	fma.rn.f64 	%fd5, %fd17, %fd2, %fd7;
+	mul.f64 	%fd14, %fd5, %fd11;
+	mul.f64 	%fd15, %fd14, %fd5;
+	sub.f64 	%fd16, %fd15, %fd6;
+	add.f64 	%fd19, %fd16, %fd9;
+	mul.f64 	%fd17, %fd3, %fd5;
+	fma.rn.f64 	%fd18, %fd17, %fd18, %fd10;
 	setp.le.u32	%p2, %r6, %r4;
-	mov.f64 	%fd18, %fd5;
-	mov.f64 	%fd19, %fd4;
 	@%p2 bra 	BB1_1;
 
 BB1_3:
@@ -104,8 +99,8 @@ BB1_3:
 	ld.param.u64 	%rd3, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_0];
 	ld.param.u64 	%rd4, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_1];
 	ld.param.u64 	%rd5, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_2];
-	ld.param.f64 	%fd15, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_3];
-	ld.param.f64 	%fd16, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_4];
+	ld.param.f64 	%fd18, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_3];
+	ld.param.f64 	%fd19, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_4];
 	ld.param.u32 	%r15, [_Z28processMandelbrotElementTestPdPKdS1_ddjjj_param_5];
 	mov.u32 	%r16, %ctaid.x;
 	mov.u32 	%r17, %nctaid.x;
@@ -129,49 +124,44 @@ BB1_3:
 	cvta.to.global.u64 	%rd2, %rd3;
 	shl.b64 	%rd11, %rd1, 3;
 	add.s64 	%rd12, %rd9, %rd11;
-	ld.global.f64 	%fd1, [%rd12];
 	add.s64 	%rd13, %rd10, %rd11;
-	ld.global.f64 	%fd2, [%rd13];
-	add.f64 	%fd3, %fd16, %fd16;
+	ld.global.f64 	%fd1, [%rd12];
+	mul.f64 	%fd74, %fd1, %fd18;
+	ld.global.f64 	%fd3, [%rd13];
+	mul.f64 	%fd73, %fd3, %fd19;
+	add.f64 	%fd5, %fd19, %fd19;
 	mov.u32 	%r38, 0;
-	mov.f64 	%fd73, %fd2;
-	mov.f64 	%fd74, %fd1;
 
 BB2_2:
-	mov.f64 	%fd5, %fd74;
-	mov.f64 	%fd4, %fd73;
-	mul.f64 	%fd17, %fd4, %fd4;
-	fma.rn.f64 	%fd18, %fd5, %fd5, %fd17;
-	setp.gtu.f64	%p2, %fd18, 0d4010000000000000;
+	mov.f64 	%fd7, %fd74;
+	mul.f64 	%fd8, %fd73, %fd73;
+	fma.rn.f64 	%fd20, %fd7, %fd7, %fd8;
+	setp.gtu.f64	%p2, %fd20, 0d4010000000000000;
 	@%p2 bra 	BB2_4;
 
 	add.s32 	%r38, %r38, 1;
-	mul.f64 	%fd19, %fd5, %fd15;
-	mul.f64 	%fd20, %fd19, %fd5;
-	mul.f64 	%fd21, %fd4, %fd16;
-	mul.f64 	%fd22, %fd21, %fd4;
-	sub.f64 	%fd23, %fd20, %fd22;
-	add.f64 	%fd6, %fd23, %fd1;
-	mul.f64 	%fd24, %fd3, %fd5;
-	fma.rn.f64 	%fd7, %fd24, %fd4, %fd2;
+	mul.f64 	%fd21, %fd7, %fd18;
+	mul.f64 	%fd22, %fd21, %fd7;
+	sub.f64 	%fd23, %fd22, %fd8;
+	add.f64 	%fd74, %fd23, %fd1;
+	mul.f64 	%fd24, %fd5, %fd7;
+	fma.rn.f64 	%fd73, %fd24, %fd73, %fd3;
 	setp.le.u32	%p3, %r38, %r15;
-	mov.f64 	%fd73, %fd7;
-	mov.f64 	%fd74, %fd6;
 	@%p3 bra 	BB2_2;
 
 BB2_4:
 	add.s32 	%r4, %r38, 1;
-	cvt.rn.f64.u32	%fd8, %r4;
+	cvt.rn.f64.u32	%fd11, %r4;
 	{
 	.reg .b32 %temp; 
-	mov.b64 	{%temp, %r39}, %fd8;
+	mov.b64 	{%temp, %r39}, %fd11;
 	}
 	setp.ne.s32	%p4, %r4, 0;
 	setp.lt.s32	%p5, %r39, 2146435072;
 	and.pred  	%p6, %p4, %p5;
 	@%p6 bra 	BB2_10;
 
-	abs.f64 	%fd25, %fd8;
+	abs.f64 	%fd25, %fd11;
 	setp.gtu.f64	%p7, %fd25, 0d7FF0000000000000;
 	@%p7 bra 	BB2_9;
 
@@ -185,13 +175,13 @@ BB2_8:
 	bra.uni 	BB2_16;
 
 BB2_9:
-	add.f64 	%fd76, %fd8, %fd8;
+	add.f64 	%fd76, %fd11, %fd11;
 	bra.uni 	BB2_16;
 
 BB2_10:
 	{
 	.reg .b32 %temp; 
-	mov.b64 	{%r40, %temp}, %fd8;
+	mov.b64 	{%r40, %temp}, %fd11;
 	}
 	setp.lt.s32	%p9, %r39, 1048576;
 	@%p9 bra 	BB2_12;
@@ -200,7 +190,7 @@ BB2_10:
 	bra.uni 	BB2_13;
 
 BB2_12:
-	mul.f64 	%fd28, %fd8, 0d4350000000000000;
+	mul.f64 	%fd28, %fd11, 0d4350000000000000;
 	{
 	.reg .b32 %temp; 
 	mov.b64 	{%temp, %r39}, %fd28;

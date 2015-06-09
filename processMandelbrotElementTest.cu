@@ -26,8 +26,8 @@ __device__ unsigned int doIterations( double const realPart0,
                                       double const cy, 
                                       unsigned int const maxIters ) {
     // Initialise: z = z0
-    double realPart = realPart0;
-    double imagPart = imagPart0;
+    double realPart = cx*realPart0;
+    double imagPart = cy*imagPart0;
     unsigned int count = 0;
     // Loop until escape
     while ( ( count <= maxIters )

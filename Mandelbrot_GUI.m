@@ -66,6 +66,8 @@ function Mandelbrot_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.styleComputationGpu1,'value',0);
     set(handles.styleComputationGpu2,'value',0);
     set(handles.styleComputationGpu3,'value',0);
+    set(handles.styleComputationAll,'value',0);
+
 
 % --- Outputs from this function are returned to the command line.
 function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles) 
@@ -85,6 +87,26 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+
+if(get(handles.styleComputationAll,'value') == 1)
+    benchmark = BenchmarkTester(handles);
+    % iterations = [10, 100, 1000]
+    caption = benchmark.iterations;
+    disp(caption);
+    % objects
+    objects = {'CPU', 'GPU', 'FunArray', 'CUDA'};
+    
+    % vtime
+    %           | 10 | 100 | 1000 |
+    % CPU       |    |     |      |
+    % GPU       |    |     |      |
+    % funArray  |    |     |      |
+    % CUDA      |    |     |      |
+    vTime = runBenchmark(benchmark);
+    disp(vTime);
+else
+
 
 % use simple gpuArray
 if(get(handles.styleComputationGpu1,'value') == 1)
@@ -127,6 +149,7 @@ vTime = [calcTime 0.9 0.8 ; 0.1 0.09 0.08 ; 0.05 0.04 0.035 ; 0.001 0.0009 0.000
 
 % rendering of the visualization and the benchmark plot
 renderImage(count, handles);
+end
 renderBenchmarkPlot(vTime, handles);
 
 
