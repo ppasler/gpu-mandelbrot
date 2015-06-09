@@ -7,12 +7,12 @@ classdef FormulaProvider
         end
     
         function [c] = initC(obj, xGrid, yGrid, handles)
-            cX = str2double(get(handles.cX,'String'));
-            cY = str2double(get(handles.cY,'String'));
+            a = str2double(get(handles.a,'String'));
+            b = str2double(get(handles.b,'String'));
             if get(handles.mandelbrot,'value')==1
-                c=cX.*xGrid+cY.*yGrid.*1i;
+                c=a.*xGrid+b.*yGrid.*1i;
             else
-                c=cX+cY*1i;
+                c=a+b*1i;
             end
         end
     end

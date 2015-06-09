@@ -22,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 20-May-2015 12:06:26
+% Last Modified by GUIDE v2.5 09-Jun-2015 20:14:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -163,20 +163,28 @@ function[] = renderImage(count, handles)
     
     % --- coloring of the image with different styles
     if get(handles.styleDrawingJet,'Value') % jet color vector
-            colormap([jet();flipud( jet() );0 0 0]); 
-    elseif get(handles.styleDrawingHsv,'Value') %hsv color vector
-            colormap([hsv();flipud( hsv() );0 0 0]);
+            map = colormap (handles.plotImage, ([jet();flipud( jet() );0 0 0]));
+    elseif get(handles.styleDrawingHsv,'Value') % hsv color vector
+            map = colormap (handles.plotImage, ([hsv();flipud( hsv() );0 0 0]));
+    elseif get(handles.styleDrawingParula,'Value') % cool color vector
+            map = colormap (handles.plotImage, ([parula();flipud( parula() );0 0 0]));
+    elseif get(handles.styleDrawingCool,'Value') % hot color vector
+            map = colormap (handles.plotImage, ([cool();flipud( cool() );0 0 0]));
+    elseif get(handles.styleDrawingHot,'Value') % hot color vector
+            map = colormap (handles.plotImage, ([hot();flipud( hot() );0 0 0]));
+    elseif get(handles.styleDrawingSummer,'Value') %parula color vector
+            map = colormap (handles.plotImage, ([summer();flipud( summer() );0 0 0]));        
     end
     
     % --- save the image in the local directory
-    % imwrite(count, 'img.png', 'png');
+    imwrite(log(count), 'img.png', 'png');
     
     % END IMAGE RENDERING%
     
     
     
 function[] = renderBenchmarkPlot(vTime, handles)
-    % START IMAGE RENDERING%
+    % START BENCHMARK PLOT RENDERING%
     axes(handles.plotResults); %select plotImage as current plot
     
     % --- create a bar chart
@@ -190,7 +198,7 @@ function[] = renderBenchmarkPlot(vTime, handles)
     colormap (handles.plotResults, summer);
     %handles.Textresult = 'test';
     
-    % END IMAGE RENDERING%
+    % END BENCHMARK PLOT RENDERING%
     
     
 %% GUI element functions/callbacks
@@ -286,11 +294,11 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-function cX_Callback(hObject, eventdata, handles)
+function a_Callback(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
-function cX_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to cX (see GCBO)
+function a_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to a (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -301,11 +309,11 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-function cY_Callback(hObject, eventdata, handles)
+function b_Callback(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
-function cY_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to cY (see GCBO)
+function b_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to b (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 
@@ -341,6 +349,12 @@ function mandelbrot_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of mandelbrot
 set(handles.mandelbrot,'value',1)
 set(handles.julia,'value',0)
+set(handles.a,'String',1)
+set(handles.b,'String',1)
+set(handles.xMin,'String',-2)
+set(handles.xMax,'String',0.5)
+set(handles.yMin,'String',-1.2)
+set(handles.yMax,'String',1.2)
 
 % --- Executes on button press in julia.
 function julia_Callback(hObject, eventdata, handles)
@@ -349,8 +363,14 @@ function julia_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of julia
-set(handles.julia,'value',1)
 set(handles.mandelbrot,'value',0)
+set(handles.julia,'value',1)
+set(handles.a,'String',0.38)
+set(handles.b,'String',0.38)
+set(handles.xMin,'String',-1.5)
+set(handles.xMax,'String',1.5)
+set(handles.yMin,'String',-1.5)
+set(handles.yMax,'String',1.5)
 
 
 % --- Executes on button press in styleComputationCpu.
@@ -364,7 +384,8 @@ set(handles.styleComputationCpu,'value',1);
 set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',0);
-set(handles.styleComputationAll,'value',0);
+set(handles.styleComputationAll,'value', 0);
+set(handles.benchmarkPanel,'visible','Off');
 
 
 % --- Executes on button press in styleComputationGpu1.
@@ -378,7 +399,8 @@ set(handles.styleComputationCpu,'value',0);
 set(handles.styleComputationGpu1,'value',1);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',0);
-set(handles.styleComputationAll,'value',0);
+set(handles.styleComputationAll,'value', 0);
+set(handles.benchmarkPanel,'visible','Off');
 
 
 % --- Executes on button press in styleComputationGpu2.
@@ -392,7 +414,8 @@ set(handles.styleComputationCpu,'value',0);
 set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',1);
 set(handles.styleComputationGpu3,'value',0);
-set(handles.styleComputationAll,'value',0);
+set(handles.styleComputationAll,'value', 0);
+set(handles.benchmarkPanel,'visible','Off');
 
 
 % --- Executes on button press in styleComputationGpu3.
@@ -407,6 +430,7 @@ set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',1);
 set(handles.styleComputationAll,'value',0);
+set(handles.benchmarkPanel,'visible','Off');
 
 
 % --- Executes on button press in styleComputationAll.
@@ -421,6 +445,7 @@ set(handles.styleComputationGpu1,'value',0);
 set(handles.styleComputationGpu2,'value',0);
 set(handles.styleComputationGpu3,'value',0);
 set(handles.styleComputationAll,'value',1);
+set(handles.benchmarkPanel,'visible','On');
 
 
 % --- Executes on button press in styleDrawingJet.
@@ -433,6 +458,10 @@ function styleDrawingJet_Callback(hObject, eventdata, handles)
 
 set(handles.styleDrawingJet,'value',1);
 set(handles.styleDrawingHsv,'value',0);
+set(handles.styleDrawingParula,'value',0);
+set(handles.styleDrawingCool,'value',0);
+set(handles.styleDrawingHot,'value',0);
+set(handles.styleDrawingSummer,'value',0);
 
 % --- Executes on button press in styleDrawingHsv.
 function styleDrawingHsv_Callback(hObject, eventdata, handles)
@@ -444,3 +473,88 @@ function styleDrawingHsv_Callback(hObject, eventdata, handles)
 
 set(handles.styleDrawingJet,'value',0);
 set(handles.styleDrawingHsv,'value',1);
+set(handles.styleDrawingParula,'value',0);
+set(handles.styleDrawingCool,'value',0);
+set(handles.styleDrawingHot,'value',0);
+set(handles.styleDrawingSummer,'value',0);
+
+% --- Executes on button press in styleDrawingParula.
+function styleDrawingParula_Callback(hObject, eventdata, handles)
+% hObject    handle to styleDrawingParula (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleDrawingParula
+set(handles.styleDrawingJet,'value',0);
+set(handles.styleDrawingHsv,'value',0);
+set(handles.styleDrawingParula,'value',1);
+set(handles.styleDrawingCool,'value',0);
+set(handles.styleDrawingHot,'value',0);
+set(handles.styleDrawingSummer,'value',0);
+
+% --- Executes on button press in styleDrawingCool.
+function styleDrawingCool_Callback(hObject, eventdata, handles)
+% hObject    handle to styleDrawingCool (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleDrawingCool
+
+set(handles.styleDrawingJet,'value',0);
+set(handles.styleDrawingHsv,'value',0);
+set(handles.styleDrawingParula,'value',0);
+set(handles.styleDrawingCool,'value',1);
+set(handles.styleDrawingHot,'value',0);
+set(handles.styleDrawingSummer,'value',0);
+
+% --- Executes on button press in styleDrawingHot.
+function styleDrawingHot_Callback(hObject, eventdata, handles)
+% hObject    handle to styleDrawingHot (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleDrawingHot
+
+set(handles.styleDrawingJet,'value',0);
+set(handles.styleDrawingHsv,'value',0);
+set(handles.styleDrawingParula,'value',0);
+set(handles.styleDrawingCool,'value',0);
+set(handles.styleDrawingHot,'value',1);
+set(handles.styleDrawingSummer,'value',0);
+
+% --- Executes on button press in styleDrawingSummer.
+function styleDrawingSummer_Callback(hObject, eventdata, handles)
+% hObject    handle to styleDrawingSummer (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of styleDrawingSummer
+
+set(handles.styleDrawingJet,'value',0);
+set(handles.styleDrawingHsv,'value',0);
+set(handles.styleDrawingParula,'value',0);
+set(handles.styleDrawingCool,'value',0);
+set(handles.styleDrawingHot,'value',0);
+set(handles.styleDrawingSummer,'value',1);
+
+% --- Executes on button press in bmGroupMethod.
+function bmGroupMethod_Callback(hObject, eventdata, handles)
+% hObject    handle to bmGroupMethod (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of bmGroupMethod
+
+set(handles.bmGroupMethod,'value',1);
+set(handles.bmGroupIterations,'value',0);
+
+% --- Executes on button press in bmGroupIterations.
+function bmGroupIterations_Callback(hObject, eventdata, handles)
+% hObject    handle to bmGroupIterations (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of bmGroupIterations
+
+set(handles.bmGroupMethod,'value',0);
+set(handles.bmGroupIterations,'value',1);
