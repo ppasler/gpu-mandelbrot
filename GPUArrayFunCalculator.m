@@ -1,20 +1,19 @@
 classdef GPUArrayFunCalculator
     properties
-       c
-       xGrid
-       yGrid
+       z0
        index
     end    
     methods
         function obj = GPUArrayFunCalculator(handles)
             gridProvider = GridProvider;
-            [obj.xGrid, obj.yGrid] = initGridGPU(gridProvider, handles);
+            [xGrid, yGrid] = initGridGPU(gridProvider, handles);
 
+            obj.z0 = complex(xGrid, yGrid);
             obj.index = str2double(get(handles.index,'string'));
         end    
         function [count] = calc(obj, iterations)
             count = arrayfun( @processMandelbrotElement, ...
-            obj.xGrid, obj.yGrid, iterations); 
+            obj.z0, iterations); 
         end
     end
 end

@@ -1,5 +1,4 @@
-function count = processMandelbrotElement(x0,y0,iterations)
-z0 = complex(x0,y0);
+function count = processMandelbrotElement(z0,iterations)
 z = z0;
 count = 1;
 while (count <= iterations) && (abs(z) <= 2)

@@ -86,8 +86,6 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-iterations = str2double(get(handles.iterations,'string'));
-
 % use simple gpuArray
 if(get(handles.styleComputationGpu1,'value') == 1)
     calculator = GPUCalculator(handles);
@@ -108,6 +106,8 @@ else
     calculator = CPUCalculator(handles);
     methodString = 'simple CPU';
 end
+
+iterations = str2double(get(handles.iterations,'string'));
 
 t = tic();  % START CALCULATION %
 count = calc(calculator, iterations);
