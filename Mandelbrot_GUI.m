@@ -113,7 +113,12 @@ t = tic();  % START CALCULATION %
 count = calc(calculator, iterations);
 calcTime = toc(t);
 
-fprintf( '%1.2f secs for calculation with %s\n', calcTime, methodString);
+setName = 'mandebrot';
+if(get(handles.mandelbrot,'value') == 0)
+    setName = 'julia';
+end
+
+fprintf( '%1.2f secs for calculating %s set with %s\n', calcTime, setName, methodString);
 % END CALCULATION %
 
 renderImage(count, 1, handles); % image rendering of 
