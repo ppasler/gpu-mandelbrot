@@ -1,7 +1,7 @@
-function count = processMandelbrotElement(z0,iterations)
-z = z0;
-count = 1;
-while (count <= iterations) && (abs(z) <= 2)
-    count = count + 1;
-    z = z*z + z0;
-end
+function count = processMandelbrotElement(count, z, c, index ,iterations)
+    for j=1:iterations
+        z=z.^index+c;
+
+        inside = abs( z )<=2;
+        count = count + inside;
+    end
