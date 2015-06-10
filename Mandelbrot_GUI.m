@@ -22,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 09-Jun-2015 20:14:56
+% Last Modified by GUIDE v2.5 10-Jun-2015 17:37:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -132,10 +132,12 @@ end
 iterations = str2double(get(handles.iterations,'string'));
 
 t = tic();  % START CALCULATION %
+
 count = calc(calculator, iterations);
+count = log( count );
 calcTime = toc(t);
 
-setName = 'Mandelbrot';
+setName = 'mandelbrot';
 if(get(handles.mandelbrot,'value') == 0)
     setName = 'julia';
 end
@@ -158,7 +160,6 @@ function[] = renderImage(count, handles)
     % START IMAGE RENDERING%
     % --- image rendering: selecting right plot and assign log of result
     axes(handles.plotImage);
-    count = log( count );
     imagesc( count );
     
     % --- coloring of the image with different styles
@@ -174,31 +175,46 @@ function[] = renderImage(count, handles)
             map = colormap (handles.plotImage, ([hot();flipud( hot() );0 0 0]));
     elseif get(handles.styleDrawingSummer,'Value') %parula color vector
             map = colormap (handles.plotImage, ([summer();flipud( summer() );0 0 0]));        
-    end
-    
-    % --- save the image in the local directory
-    imwrite(log(count), 'img.png', 'png');
-    
+    end    
     % END IMAGE RENDERING%
     
     
     
 function[] = renderBenchmarkPlot(vTime, handles)
     % START BENCHMARK PLOT RENDERING%
+    %set(datacursormode(gcf), 'DisplayStyle','datatip', 'SnapToDataVertex','off','Enable','on', 'UpdateFcn',{@showlabel,label}); 
     axes(handles.plotResults); %select plotImage as current plot
+    labelMethod = {'CPU', 'GPU', 'FunArray', 'CUDA'};
+    labelIterations = {'10', '100', '1000'};
     
-    % --- create a bar chart
-    %caption = ['CPU', 'GPU', 'GPU FunArray', 'CUDA']; 
-    bar(vTime);
-    set(gca,'XTickLabel',{'CPU', 'GPU', 'FunArray', 'CUDA'});
-    set(gca,'YScale','log');
-    ylabel('time [sec]');
+    % --- create a bar chart, depending on grouping options
+    if get(handles.bmGroupMethod,'Value') %bar chart for method bars
+        bar(vTime);
+        set(gca,'XTickLabel',labelMethod);
+        set(gca,'YScale','log');
+        ylabel('time [sec]');
+        xlabel('computation method');
+        legend(handles.plotResults, labelIterations);
+    elseif get(handles.bmGroupIterations,'Value') %bar chart for iter. bars
+        bar(vTime.');
+        set(gca,'XTickLabel',labelIterations);
+        set(gca,'YScale','log');
+        ylabel('time [sec]');
+        xlabel('iterations');
+        legend(handles.plotResults,labelMethod);
+    end
     
-    %axes(handles.plotResults);
     colormap (handles.plotResults, summer);
-    %handles.Textresult = 'test';
+    
+    % --- calculate and print comparison factor cpu/cuda into text field
+    factor = sum(vTime(1, :))/sum(vTime(4,:));
+    set(handles.panelResults,'visible','On');
+    strComparison = strcat('CUDA is in average', {' '}, int2str(factor) ,' times faster than the CPU.');
+    set(handles.textResult,'String',strComparison); 
     
     % END BENCHMARK PLOT RENDERING%
+    
+    
     
     
 %% GUI element functions/callbacks
@@ -365,8 +381,8 @@ function julia_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of julia
 set(handles.mandelbrot,'value',0)
 set(handles.julia,'value',1)
-set(handles.a,'String',0.38)
-set(handles.b,'String',0.38)
+set(handles.a,'String',-0.7)
+set(handles.b,'String',0.3)
 set(handles.xMin,'String',-1.5)
 set(handles.xMax,'String',1.5)
 set(handles.yMin,'String',-1.5)
@@ -558,3 +574,31 @@ function bmGroupIterations_Callback(hObject, eventdata, handles)
 
 set(handles.bmGroupMethod,'value',0);
 set(handles.bmGroupIterations,'value',1);
+
+
+% --- Executes on button press in radiobutton24.
+function radiobutton24_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton24 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton24
+
+
+% --- Executes on button press in radiobutton25.
+function radiobutton25_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton25 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton25
+
+
+% --------------------------------------------------------------------
+% --- save the image in the local directory
+function saveImage_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to saveImage (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+imwrite(count, 'img.png', 'png');
