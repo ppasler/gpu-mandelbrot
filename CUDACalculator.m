@@ -1,8 +1,8 @@
 classdef CUDACalculator
     properties
        c
-       cX
-       cY
+       a
+       b
        xGrid
        yGrid
        index
@@ -12,8 +12,8 @@ classdef CUDACalculator
             gridProvider = GridProvider;
             [obj.xGrid, obj.yGrid] = initGridGPU(gridProvider, handles);
 
-            obj.cX = str2double(get(handles.cX,'string'));
-            obj.cY = str2double(get(handles.cY, 'string'));
+            obj.a = str2double(get(handles.a,'string'));
+            obj.b = str2double(get(handles.b, 'string'));
             
             obj.index = str2double(get(handles.index,'string'));
         end    
@@ -31,7 +31,7 @@ classdef CUDACalculator
             
             % Call the kernel
             count = zeros( size(obj.xGrid), 'gpuArray' );
-            count = feval( kernel, count, obj.xGrid, obj.yGrid, obj.cX, obj.cY, iterations, 1, numElements );
+            count = feval( kernel, count, obj.xGrid, obj.yGrid, obj.a, obj.b, iterations, 1, numElements );
 
             % Show
             count = gather( count ); % Fetch the data back from the GPU   
