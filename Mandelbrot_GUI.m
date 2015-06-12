@@ -162,11 +162,18 @@ function[] = renderImage(count, handles)
     axes(handles.plotImage);
     imagesc( count );
     
+    setColormap(handles) 
+    % END IMAGE RENDERING%
+   
+    
+% function for changing the colormap    
+function setColormap(handles)
+    % START CHANGING COLORMAP PLOT RENDERING%
     % --- coloring of the image with different styles
     if get(handles.styleDrawingJet,'Value') % jet color vector
-            map = colormap (handles.plotImage, ([jet();flipud( jet() );0 0 0]));
+            colormap (handles.plotImage, ([jet();flipud( jet() );0 0 0]));
     elseif get(handles.styleDrawingHsv,'Value') % hsv color vector
-            map = colormap (handles.plotImage, ([hsv();flipud( hsv() );0 0 0]));
+            colormap (handles.plotImage, ([hsv();flipud( hsv() );0 0 0]));
     elseif get(handles.styleDrawingParula,'Value') % cool color vector
             map = colormap (handles.plotImage, ([parula();flipud( parula() );0 0 0]));
     elseif get(handles.styleDrawingCool,'Value') % hot color vector
@@ -175,9 +182,9 @@ function[] = renderImage(count, handles)
             map = colormap (handles.plotImage, ([hot();flipud( hot() );0 0 0]));
     elseif get(handles.styleDrawingSummer,'Value') %parula color vector
             map = colormap (handles.plotImage, ([summer();flipud( summer() );0 0 0]));        
-    end    
-    % END IMAGE RENDERING%
+    end
     
+    % END CHANGING COLORMAP PLOT RENDERING%
     
     
 function[] = renderBenchmarkPlot(vTime, handles)
@@ -479,6 +486,8 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
 
+setColormap(handles)
+
 % --- Executes on button press in styleDrawingHsv.
 function styleDrawingHsv_Callback(hObject, eventdata, handles)
 % hObject    handle to styleDrawingHsv (see GCBO)
@@ -494,6 +503,8 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
 
+setColormap(handles)
+
 % --- Executes on button press in styleDrawingParula.
 function styleDrawingParula_Callback(hObject, eventdata, handles)
 % hObject    handle to styleDrawingParula (see GCBO)
@@ -507,6 +518,8 @@ set(handles.styleDrawingParula,'value',1);
 set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
+
+setColormap(handles)
 
 % --- Executes on button press in styleDrawingCool.
 function styleDrawingCool_Callback(hObject, eventdata, handles)
@@ -523,6 +536,8 @@ set(handles.styleDrawingCool,'value',1);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
 
+setColormap(handles)
+
 % --- Executes on button press in styleDrawingHot.
 function styleDrawingHot_Callback(hObject, eventdata, handles)
 % hObject    handle to styleDrawingHot (see GCBO)
@@ -538,6 +553,8 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',1);
 set(handles.styleDrawingSummer,'value',0);
 
+setColormap(handles)
+
 % --- Executes on button press in styleDrawingSummer.
 function styleDrawingSummer_Callback(hObject, eventdata, handles)
 % hObject    handle to styleDrawingSummer (see GCBO)
@@ -552,6 +569,8 @@ set(handles.styleDrawingParula,'value',0);
 set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',1);
+
+setColormap(handles)
 
 % --- Executes on button press in bmGroupMethod.
 function bmGroupMethod_Callback(hObject, eventdata, handles)
