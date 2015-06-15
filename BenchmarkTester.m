@@ -9,7 +9,7 @@ classdef BenchmarkTester
     end    
     methods
         function obj = BenchmarkTester(handles)
-            obj.iterations = [1, 5, 10];
+            obj.iterations = [1, 10];
             
             obj.cpuCalculator = CPUCalculator(handles);
             obj.gpuCalculator = GPUCalculator(handles);
@@ -28,18 +28,22 @@ classdef BenchmarkTester
             fprintf( 'running with %1.0f iterations\n', iteration);
             calcTimes = [];
         	calcTimes = [calcTimes; runTest(obj, obj.cpuCalculator, iteration)];
+            disp('CPU');
             calcTimes = [calcTimes; runTest(obj, obj.gpuCalculator, iteration)];
+            disp('GPU');
             calcTimes = [calcTimes; runTest(obj, obj.gpuFunArrayCalculator, iteration)];
+            disp('FunArray');
             calcTimes = [calcTimes; runTest(obj, obj.cudaCalculator, iteration)];
+            disp('CUDA');
         end
         function calcTime = runTest(obj, calculator, iteration)
             % make sure compiler is through
-            for i = 1:5
-                calc(calculator, iteration);
-            end
+            %for i = 1:5
+            %    calc(calculator, iteration);
+            %end
             
             % calc 5 times and take avg
-            for i = 1:5
+            for i = 1:1
                 t = tic();
                 calc(calculator, iteration);
                 calcTime = toc(t);

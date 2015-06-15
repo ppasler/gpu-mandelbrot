@@ -92,10 +92,9 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 if(get(handles.styleComputationAll,'value') == 1)
     benchmark = BenchmarkTester(handles);
     % iterations = [10, 100, 1000]
-    caption = benchmark.iterations;
-    disp(caption);
+    labelIterations = benchmark.iterations;
     % objects
-    objects = {'CPU', 'GPU', 'FunArray', 'CUDA'};
+    labelMethods = {'CPU', 'GPU', 'FunArray', 'CUDA'};
     
     % vtime
     %           | 10 | 100 | 1000 |
@@ -104,55 +103,48 @@ if(get(handles.styleComputationAll,'value') == 1)
     % funArray  |    |     |      |
     % CUDA      |    |     |      |
     vTime = runBenchmark(benchmark);
-    disp(vTime);
+    renderBenchmarkPlot(vTime, labelIterations, labelMethods, handles);
 else
+    % use simple gpuArray
+    if(get(handles.styleComputationGpu1,'value') == 1)
+        calculator = GPUCalculator(handles);
+        methodString = 'simple GPU';
 
+    % use array fun
+    elseif(get(handles.styleComputationGpu2,'value') == 1)
+        calculator = GPUArrayFunCalculator(handles);
+        methodString = 'ArrayFun GPU';
 
-% use simple gpuArray
-if(get(handles.styleComputationGpu1,'value') == 1)
-    calculator = GPUCalculator(handles);
-    methodString = 'simple GPU';
-    
-% use array fun
-elseif(get(handles.styleComputationGpu2,'value') == 1)
-    calculator = GPUArrayFunCalculator(handles);
-    methodString = 'ArrayFun GPU';
+    % use CUDA
+    elseif(get(handles.styleComputationGpu3,'value') == 1)
+        calculator = CUDACalculator(handles);
+        methodString = 'CUDA';
 
-% use CUDA
-elseif(get(handles.styleComputationGpu3,'value') == 1)
-    calculator = CUDACalculator(handles);
-    methodString = 'CUDA';
-    
-% use simple 
-else
-    calculator = CPUCalculator(handles);
-    methodString = 'simple CPU';
+    % use simple 
+    else
+        calculator = CPUCalculator(handles);
+        methodString = 'simple CPU';
+    end
+
+    iterations = str2double(get(handles.iterations,'string'));
+
+    t = tic();  % START CALCULATION %
+
+    count = calc(calculator, iterations);
+    count = log( count );
+    calcTime = toc(t);
+
+    setName = 'mandelbrot';
+    if(get(handles.mandelbrot,'value') == 0)
+        setName = 'julia';
+    end
+
+    fprintf( '%1.2f secs for calculating %s set with %s\n', calcTime, setName, methodString);
+    % END CALCULATION %
+
+    % rendering of the visualization and the benchmark plot
+    renderImage(count, handles);
 end
-
-iterations = str2double(get(handles.iterations,'string'));
-
-t = tic();  % START CALCULATION %
-
-count = calc(calculator, iterations);
-count = log( count );
-calcTime = toc(t);
-
-setName = 'mandelbrot';
-if(get(handles.mandelbrot,'value') == 0)
-    setName = 'julia';
-end
-
-fprintf( '%1.2f secs for calculating %s set with %s\n', calcTime, setName, methodString);
-% END CALCULATION %
-
-% --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]
-vTime = [calcTime 0.9 0.8 ; 0.1 0.09 0.08 ; 0.05 0.04 0.035 ; 0.001 0.0009 0.0008];
-% --- test preparation end
-
-% rendering of the visualization and the benchmark plot
-renderImage(count, handles);
-end
-renderBenchmarkPlot(vTime, handles);
 
 
 % function for image rendedering
@@ -187,28 +179,27 @@ function setColormap(handles)
     % END CHANGING COLORMAP PLOT RENDERING%
     
     
-function[] = renderBenchmarkPlot(vTime, handles)
+function[] = renderBenchmarkPlot(vTime, labelIterations, labelMethods, handles)
     % START BENCHMARK PLOT RENDERING%
     %set(datacursormode(gcf), 'DisplayStyle','datatip', 'SnapToDataVertex','off','Enable','on', 'UpdateFcn',{@showlabel,label}); 
     axes(handles.plotResults); %select plotImage as current plot
-    labelMethod = {'CPU', 'GPU', 'FunArray', 'CUDA'};
-    labelIterations = {'10', '100', '1000'};
     
     % --- create a bar chart, depending on grouping options
     if get(handles.bmGroupMethod,'Value') %bar chart for method bars
         bar(vTime);
-        set(gca,'XTickLabel',labelMethod);
+        set(gca,'XTickLabel',labelMethods);
         set(gca,'YScale','log');
         ylabel('time [sec]');
         xlabel('computation method');
-        legend(handles.plotResults, labelIterations);
+        labelMethodsString = strtrim(cellstr(num2str(labelIterations'))');
+        legend(handles.plotResults, labelMethodsString);
     elseif get(handles.bmGroupIterations,'Value') %bar chart for iter. bars
         bar(vTime.');
         set(gca,'XTickLabel',labelIterations);
         set(gca,'YScale','log');
         ylabel('time [sec]');
         xlabel('iterations');
-        legend(handles.plotResults,labelMethod);
+        legend(handles.plotResults, labelMethods);
     end
     
     colormap (handles.plotResults, summer);
