@@ -22,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 10-Jun-2015 17:37:06
+% Last Modified by GUIDE v2.5 15-Jun-2015 11:30:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -67,6 +67,10 @@ function Mandelbrot_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.styleComputationGpu2,'value',0);
     set(handles.styleComputationGpu3,'value',0);
     set(handles.styleComputationAll,'value',0);
+    
+    dcm = datacursormode(gcf);
+    datacursormode on;
+    set(dcm, 'updatefcn', @updateDataTip);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -105,75 +109,88 @@ if(get(handles.styleComputationAll,'value') == 1)
     % CUDA      |    |     |      |
     vTime = runBenchmark(benchmark);
     disp(vTime);
+    renderBenchmarkPlot(vTime, handles);
 else
+    % use simple gpuArray
+    if(get(handles.styleComputationGpu1,'value') == 1)
+        calculator = GPUCalculator(handles);
+        methodString = 'simple GPU';
 
+    % use array fun
+    elseif(get(handles.styleComputationGpu2,'value') == 1)
+        calculator = GPUArrayFunCalculator(handles);
+        methodString = 'ArrayFun GPU';
 
-% use simple gpuArray
-if(get(handles.styleComputationGpu1,'value') == 1)
-    calculator = GPUCalculator(handles);
-    methodString = 'simple GPU';
+    % use CUDA
+    elseif(get(handles.styleComputationGpu3,'value') == 1)
+        calculator = CUDACalculator(handles);
+        methodString = 'CUDA';
+
+    % use simple 
+    else
+        calculator = CPUCalculator(handles);
+        methodString = 'simple CPU';
+    end
     
-% use array fun
-elseif(get(handles.styleComputationGpu2,'value') == 1)
-    calculator = GPUArrayFunCalculator(handles);
-    methodString = 'ArrayFun GPU';
+    % get the iterations in both, string and double format
+    strIterations = get(handles.iterations,'string');
+    iterations = str2double(strIterations);
 
-% use CUDA
-elseif(get(handles.styleComputationGpu3,'value') == 1)
-    calculator = CUDACalculator(handles);
-    methodString = 'CUDA';
-    
-% use simple 
-else
-    calculator = CPUCalculator(handles);
-    methodString = 'simple CPU';
+    t = tic();  % START CALCULATION %
+
+    count = calc(calculator, iterations);
+    count = log( count );
+    calcTime = toc(t);
+
+    setName = 'Mandelbrot';
+    if(get(handles.mandelbrot,'value') == 0)
+        setName = 'Julia';
+    end
+
+    fprintf( '%1.2f secs for calculating %s set with %s\n', calcTime, setName, methodString);
+    % END CALCULATION %
+
+    % --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]
+    vTime = [calcTime 0.9 0.8 ; 0.1 0.09 0.08 ; 0.05 0.04 0.035 ; 0.001 0.0009 0.0008];
+    % --- test preparation end
+
+    % display computation time in the results section
+    set(handles.panelResults,'visible','On')
+    set(handles.panelResults, 'Title', 'Computation Time'); % change panel title
+    strComputationTime = strcat('It took',{' '},num2str(calcTime, 3), ...
+    ' s to calculate', {' '}, strIterations, ' iterations for the', ...
+    {' '}, setName, ' set with the ', {' '}, methodString, '.');
+    set(handles.textResult,'String',strComputationTime);
 end
-
-iterations = str2double(get(handles.iterations,'string'));
-
-t = tic();  % START CALCULATION %
-
-count = calc(calculator, iterations);
-count = log( count );
-calcTime = toc(t);
-
-setName = 'mandelbrot';
-if(get(handles.mandelbrot,'value') == 0)
-    setName = 'julia';
-end
-
-fprintf( '%1.2f secs for calculating %s set with %s\n', calcTime, setName, methodString);
-% END CALCULATION %
-
-% --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]
-vTime = [calcTime 0.9 0.8 ; 0.1 0.09 0.08 ; 0.05 0.04 0.035 ; 0.001 0.0009 0.0008];
-% --- test preparation end
 
 % rendering of the visualization and the benchmark plot
 renderImage(count, handles);
-end
-renderBenchmarkPlot(vTime, handles);
+%renderBenchmarkPlot(vTime, handles);
 
+ 
+    
 
 % function for image rendedering
 function[] = renderImage(count, handles)
-    % START IMAGE RENDERING%
+    % START IMAGE RENDERING %
     % --- image rendering: selecting right plot and assign log of result
     axes(handles.plotImage);
     imagesc( count );
+    set(gca,'XTickLabel',''); % delete ticks (numbers around the plot)
+    set(gca,'YTickLabel','');
     
-    setColormap(handles) 
-    % END IMAGE RENDERING%
-   
+    setColormap(handles); 
+    % END IMAGE RENDERING %
+  
     
 % function for changing the colormap    
-function setColormap(handles)
+function map = setColormap(handles)
     % START CHANGING COLORMAP PLOT RENDERING%
     % --- coloring of the image with different styles
     if get(handles.styleDrawingJet,'Value') % jet color vector
-            colormap (handles.plotImage, ([jet();flipud( jet() );0 0 0]));
+            map = colormap (handles.plotImage, ([jet();flipud( jet() );0 0 0]));
     elseif get(handles.styleDrawingHsv,'Value') % hsv color vector
-            colormap (handles.plotImage, ([hsv();flipud( hsv() );0 0 0]));
+            map = colormap (handles.plotImage, ([hsv();flipud( hsv() );0 0 0]));
     elseif get(handles.styleDrawingParula,'Value') % cool color vector
             map = colormap (handles.plotImage, ([parula();flipud( parula() );0 0 0]));
     elseif get(handles.styleDrawingCool,'Value') % hot color vector
@@ -184,43 +201,47 @@ function setColormap(handles)
             map = colormap (handles.plotImage, ([summer();flipud( summer() );0 0 0]));        
     end
     
-    % END CHANGING COLORMAP PLOT RENDERING%
+    % END CHANGING COLORMAP PLOT RENDERING %
+
     
-    
-function[] = renderBenchmarkPlot(vTime, handles)
+function renderBenchmarkPlot(vTime, handles)
     % START BENCHMARK PLOT RENDERING%
-    %set(datacursormode(gcf), 'DisplayStyle','datatip', 'SnapToDataVertex','off','Enable','on', 'UpdateFcn',{@showlabel,label}); 
     axes(handles.plotResults); %select plotImage as current plot
+    colormap (handles.plotResults, summer);
+    benchmarkGroupingLayout(vTime, handles);
+    
+    % --- calculate and print comparison factor cpu/cuda into text field
+    factor = sum(vTime(1, :))/sum(vTime(4,:));
+    set(handles.panelResults,'visible','On');
+    set(handles.panelResults, 'Title', 'Efficiency Comparison'); % change panel title
+    strComparison = strcat('CUDA is in average', {' '}, int2str(factor) ,' times faster than the CPU.');
+    set(handles.textResult,'String',strComparison); 
+    
+    % END BENCHMARK PLOT RENDERING %
+
+    
+% --- create a bar chart, depending on grouping options
+function benchmarkGroupingLayout(data, handles)   
+    % START BENCHMARK GROUP LAYOUT CONFIGURATION %
     labelMethod = {'CPU', 'GPU', 'FunArray', 'CUDA'};
     labelIterations = {'10', '100', '1000'};
     
-    % --- create a bar chart, depending on grouping options
     if get(handles.bmGroupMethod,'Value') %bar chart for method bars
-        bar(vTime);
+        bar(data);
         set(gca,'XTickLabel',labelMethod);
         set(gca,'YScale','log');
         ylabel('time [sec]');
         xlabel('computation method');
         legend(handles.plotResults, labelIterations);
     elseif get(handles.bmGroupIterations,'Value') %bar chart for iter. bars
-        bar(vTime.');
+        bar(data.');
         set(gca,'XTickLabel',labelIterations);
         set(gca,'YScale','log');
         ylabel('time [sec]');
         xlabel('iterations');
         legend(handles.plotResults,labelMethod);
     end
-    
-    colormap (handles.plotResults, summer);
-    
-    % --- calculate and print comparison factor cpu/cuda into text field
-    factor = sum(vTime(1, :))/sum(vTime(4,:));
-    set(handles.panelResults,'visible','On');
-    strComparison = strcat('CUDA is in average', {' '}, int2str(factor) ,' times faster than the CPU.');
-    set(handles.textResult,'String',strComparison); 
-    
-    % END BENCHMARK PLOT RENDERING%
-    
+    % END BENCHMARK GROUP LAYOUT CONFIGURATION %
     
     
     
@@ -583,6 +604,15 @@ function bmGroupMethod_Callback(hObject, eventdata, handles)
 set(handles.bmGroupMethod,'value',1);
 set(handles.bmGroupIterations,'value',0);
 
+% update grouping , if data already exists
+if get(handles.plotResults,'visible')
+    % retrieving data from the plot
+    yOutput = get(get(handles.plotResults,'Children'),'YData');
+    data = cell2mat(yOutput);
+    
+    benchmarkGroupingLayout(flipud(data), handles);
+end
+
 % --- Executes on button press in bmGroupIterations.
 function bmGroupIterations_Callback(hObject, eventdata, handles)
 % hObject    handle to bmGroupIterations (see GCBO)
@@ -594,23 +624,14 @@ function bmGroupIterations_Callback(hObject, eventdata, handles)
 set(handles.bmGroupMethod,'value',0);
 set(handles.bmGroupIterations,'value',1);
 
-
-% --- Executes on button press in radiobutton24.
-function radiobutton24_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton24 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobutton24
-
-
-% --- Executes on button press in radiobutton25.
-function radiobutton25_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton25 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobutton25
+% update grouping , if data already exists
+if get(handles.plotResults,'visible')
+    % retrieving data from the plot    
+    yOutput = get(get(handles.plotResults,'Children'),'YData');
+    data = fliplr(cell2mat(yOutput).');
+    
+    benchmarkGroupingLayout(data, handles);
+end
 
 
 % --------------------------------------------------------------------
@@ -620,4 +641,42 @@ function saveImage_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-imwrite(count, 'img.png', 'png');
+% retrieve data and colormap
+data = log(get(get(handles.plotImage, 'Children'),'CData'));
+h = handles.plotImage;
+cMap = setColormap(handles);
+
+% scale matrix to the range of the map
+cMapSize = size(cMap,1);
+%dataScaled = round(interp1(linspace(min(data(:)),max(data(:)),cMapSize),1:cMapSize,data));
+%picture = reshape(cMapSize(dataScaled,:),[size(dataScaled) 3]); % Make RGB image from scaled data
+
+imwrite(data, 'visualization.png', 'png');
+
+
+% --------------------------------------------------------------------
+function output_txt = updateDataTip ( obj,event_obj)
+% Display the position of the data cursor
+% obj          Currently not used (empty)
+% event_obj    Handle to event object
+% output_txt   Data cursor text string (string or cell array of strings).
+% event_obj
+
+dataIndex = get(event_obj,'Target');
+pos = get(event_obj,'Position');
+
+if (strcmp(class(dataIndex), 'matlab.graphics.chart.primitive.Bar'))
+    output_txt = {['Seconds: ',num2str(pos(2),4)]};
+else
+    output_txt = {[ 'X: ',num2str(pos(1),4)],...
+    ['Y: ',num2str(pos(2),4)]};
+end
+
+
+% --------------------------------------------------------------------
+function uitoggletool5_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to uitoggletool5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+datacursormode toggle;
