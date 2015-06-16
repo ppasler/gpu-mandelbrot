@@ -22,12 +22,13 @@ __device__ size_t calculateGlobalIndex() {
 /** The actual Mandelbrot algorithm for a single location */ 
 __device__ unsigned int doIterations( double const realPart0, 
                                       double const imagPart0, 
-                                      double const cx, 
-                                      double const cy, 
+                                      double const a, 
+                                      double const b,
+                                      unsigned int const k,                                       
                                       unsigned int const maxIters ) {
     // Initialise: z = z0
-    double realPart = cx*realPart0;
-    double imagPart = cy*imagPart0;
+    double realPart = realPart0;
+    double imagPart = imagPart0;
     unsigned int count = 0;
     // Loop until escape
     while ( ( count <= maxIters )
@@ -35,8 +36,8 @@ __device__ unsigned int doIterations( double const realPart0,
         ++count;
         // Update: z = z*z + z0;
         double const oldRealPart = realPart;
-        realPart = cx*realPart*realPart - cy*imagPart*imagPart + realPart0;
-        imagPart = 2.0*cy*oldRealPart*imagPart + imagPart0;
+        realPart = realPart*realPart - imagPart*imagPart + a*realPart0;
+        imagPart = 2.0*oldRealPart*imagPart + b*imagPart0;
     }
     return count;
 }
@@ -50,8 +51,9 @@ __global__ void processMandelbrotElementTest(
                       double * out, 
                       const double * x, 
                       const double * y,
-                      const double cx, 
-                      const double cy,
+                      const double a, 
+                      const double b,
+                      const unsigned int k,
                       const unsigned int maxIters,
                       const unsigned int mandelbrot,
                       const unsigned int numel ) {
@@ -68,6 +70,6 @@ __global__ void processMandelbrotElementTest(
     double const imagPart0 = y[globalThreadIdx];
 
     // Run the itearations on this location
-    unsigned int const count = doIterations( realPart0, imagPart0, cx, cy, maxIters );
+    unsigned int const count = doIterations( realPart0, imagPart0, a, b, k, maxIters );
     out[globalThreadIdx] = log( double( count + 1 ) );
 }

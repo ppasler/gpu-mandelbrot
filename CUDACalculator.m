@@ -16,7 +16,7 @@ classdef CUDACalculator
             obj.b = str2double(get(handles.b, 'string'));
             
             obj.index = str2double(get(handles.index,'string'));
-        end    
+         end    
         function [count] = calc(obj, iterations)
             % Load the kernel
             cudaFilename = 'processMandelbrotElementTest.cu';
@@ -27,11 +27,9 @@ classdef CUDACalculator
             kernel.ThreadBlockSize = [kernel.MaxThreadsPerBlock,1,1];
             kernel.GridSize = [ceil(numElements/kernel.MaxThreadsPerBlock),1];
 
-            
-            
             % Call the kernel
             count = zeros( size(obj.xGrid), 'gpuArray' );
-            count = feval( kernel, count, obj.xGrid, obj.yGrid, obj.a, obj.b, iterations, 1, numElements );
+            count = feval( kernel, count, obj.xGrid, obj.yGrid, obj.a, obj.b, obj.index, iterations, 1, numElements );
 
             % Show
             count = gather( count ); % Fetch the data back from the GPU   
