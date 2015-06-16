@@ -96,10 +96,11 @@ function pushbutton1_Callback(hObject, eventdata, handles)
 if(get(handles.styleComputationAll,'value') == 1)
     benchmark = BenchmarkTester(handles);
     % iterations = [10, 100, 1000]
-    caption = benchmark.iterations;
-    disp(caption);
-    % objects
-    objects = {'CPU', 'GPU', 'FunArray', 'CUDA'};
+    global legendIterations;
+    legendIterations = benchmark.iterations;
+    
+    global legendMethods;
+    legendMethods = {'CPU', 'GPU', 'FunArray', 'CUDA'};
     
     % vtime
     %           | 10 | 100 | 1000 |
@@ -108,7 +109,6 @@ if(get(handles.styleComputationAll,'value') == 1)
     % funArray  |    |     |      |
     % CUDA      |    |     |      |
     vTime = runBenchmark(benchmark);
-    disp(vTime);
     renderBenchmarkPlot(vTime, handles);
 else
     % use simple gpuArray
@@ -161,10 +161,11 @@ else
     ' s to calculate', {' '}, strIterations, ' iterations for the', ...
     {' '}, setName, ' set with the ', {' '}, methodString, '.');
     set(handles.textResult,'String',strComputationTime);
+    % rendering of the visualization and the benchmark plot
+    renderImage(count, handles);
 end
 
-% rendering of the visualization and the benchmark plot
-renderImage(count, handles);
+
 %renderBenchmarkPlot(vTime, handles);
 
  
@@ -223,23 +224,24 @@ function renderBenchmarkPlot(vTime, handles)
 % --- create a bar chart, depending on grouping options
 function benchmarkGroupingLayout(data, handles)   
     % START BENCHMARK GROUP LAYOUT CONFIGURATION %
-    labelMethod = {'CPU', 'GPU', 'FunArray', 'CUDA'};
-    labelIterations = {'10', '100', '1000'};
+    global legendIterations
+    global legendMethods;
     
     if get(handles.bmGroupMethod,'Value') %bar chart for method bars
         bar(data);
-        set(gca,'XTickLabel',labelMethod);
+        set(gca,'XTickLabel',legendMethods);
         set(gca,'YScale','log');
         ylabel('time [sec]');
         xlabel('computation method');
-        legend(handles.plotResults, labelIterations);
+        labelIterationString = strtrim(cellstr(num2str(legendIterations'))');
+        legend(handles.plotResults, labelIterationString);
     elseif get(handles.bmGroupIterations,'Value') %bar chart for iter. bars
         bar(data.');
-        set(gca,'XTickLabel',labelIterations);
+        set(gca,'XTickLabel',legendIterations);
         set(gca,'YScale','log');
         ylabel('time [sec]');
         xlabel('iterations');
-        legend(handles.plotResults,labelMethod);
+        legend(handles.plotResults,legendMethods);
     end
     % END BENCHMARK GROUP LAYOUT CONFIGURATION %
     
