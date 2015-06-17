@@ -645,11 +645,11 @@ function saveImage_ClickedCallback(hObject, eventdata, handles)
 
 % retrieve data and colormap
 data = log(get(get(handles.plotImage, 'Children'),'CData'));
-h = handles.plotImage;
-cMap = setColormap(handles);
+%h = handles.plotImage;
+%cMap = setColormap(handles);
 
 % scale matrix to the range of the map
-cMapSize = size(cMap,1);
+%cMapSize = size(cMap,1);
 %dataScaled = round(interp1(linspace(min(data(:)),max(data(:)),cMapSize),1:cMapSize,data));
 %picture = reshape(cMapSize(dataScaled,:),[size(dataScaled) 3]); % Make RGB image from scaled data
 
@@ -670,6 +670,7 @@ pos = get(event_obj,'Position');
 if (strcmp(class(dataIndex), 'matlab.graphics.chart.primitive.Bar'))
     output_txt = {['Seconds: ',num2str(pos(2),4)]};
 else
+    % calculate the coordinates of the position
     output_txt = {[ 'X: ',num2str(pos(1),4)],...
     ['Y: ',num2str(pos(2),4)]};
 end
