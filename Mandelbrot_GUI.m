@@ -224,7 +224,7 @@ function renderBenchmarkPlot(vTime, handles)
 % --- create a bar chart, depending on grouping options
 function benchmarkGroupingLayout(data, handles)   
     % START BENCHMARK GROUP LAYOUT CONFIGURATION %
-    global legendIterations
+    global legendIterations;
     global legendMethods;
     
     if get(handles.bmGroupMethod,'Value') %bar chart for method bars
@@ -393,14 +393,14 @@ function mandelbrot_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of mandelbrot
-set(handles.mandelbrot,'value',1)
-set(handles.julia,'value',0)
-set(handles.a,'String',1)
-set(handles.b,'String',1)
-set(handles.xMin,'String',-2)
-set(handles.xMax,'String',0.5)
-set(handles.yMin,'String',-1.2)
-set(handles.yMax,'String',1.2)
+set(handles.mandelbrot,'value',1);
+set(handles.julia,'value',0);
+set(handles.a,'String',1);
+set(handles.b,'String',1);
+set(handles.xMin,'String',-2);
+set(handles.xMax,'String',0.5);
+set(handles.yMin,'String',-1.2);
+set(handles.yMax,'String',1.2);
 
 % --- Executes on button press in julia.
 function julia_Callback(hObject, eventdata, handles)
@@ -409,14 +409,14 @@ function julia_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of julia
-set(handles.mandelbrot,'value',0)
-set(handles.julia,'value',1)
-set(handles.a,'String',-0.7)
-set(handles.b,'String',0.3)
-set(handles.xMin,'String',-1.5)
-set(handles.xMax,'String',1.5)
-set(handles.yMin,'String',-1.5)
-set(handles.yMax,'String',1.5)
+set(handles.mandelbrot,'value',0);
+set(handles.julia,'value',1);
+set(handles.a,'String',-0.7);
+set(handles.b,'String',0.3);
+set(handles.xMin,'String',-1.5);
+set(handles.xMax,'String',1.5);
+set(handles.yMin,'String',-1.5);
+set(handles.yMax,'String',1.5);
 
 
 % --- Executes on button press in styleComputationCpu.
@@ -509,7 +509,7 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
 
-setColormap(handles)
+setColormap(handles);
 
 % --- Executes on button press in styleDrawingHsv.
 function styleDrawingHsv_Callback(hObject, eventdata, handles)
@@ -526,7 +526,7 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
 
-setColormap(handles)
+setColormap(handles);
 
 % --- Executes on button press in styleDrawingParula.
 function styleDrawingParula_Callback(hObject, eventdata, handles)
@@ -542,7 +542,7 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
 
-setColormap(handles)
+setColormap(handles);
 
 % --- Executes on button press in styleDrawingCool.
 function styleDrawingCool_Callback(hObject, eventdata, handles)
@@ -559,7 +559,7 @@ set(handles.styleDrawingCool,'value',1);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',0);
 
-setColormap(handles)
+setColormap(handles);
 
 % --- Executes on button press in styleDrawingHot.
 function styleDrawingHot_Callback(hObject, eventdata, handles)
@@ -576,7 +576,7 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',1);
 set(handles.styleDrawingSummer,'value',0);
 
-setColormap(handles)
+setColormap(handles);
 
 % --- Executes on button press in styleDrawingSummer.
 function styleDrawingSummer_Callback(hObject, eventdata, handles)
@@ -593,7 +593,7 @@ set(handles.styleDrawingCool,'value',0);
 set(handles.styleDrawingHot,'value',0);
 set(handles.styleDrawingSummer,'value',1);
 
-setColormap(handles)
+setColormap(handles);
 
 % --- Executes on button press in bmGroupMethod.
 function bmGroupMethod_Callback(hObject, eventdata, handles)
