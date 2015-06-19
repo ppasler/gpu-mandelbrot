@@ -20,21 +20,25 @@ __device__ size_t calculateGlobalIndex() {
 }
 
 /** The actual Mandelbrot algorithm for a single location */ 
-__device__ unsigned int doIterations( double const realPart0, 
-                                      double const imagPart0, 
+__device__ unsigned int doIterations( double const a, 
+                                      double const b, 
                                       unsigned int const maxIters ) {
-    // Initialise: z = z0
-    double realPart = realPart0;
-    double imagPart = imagPart0;
+    // Initialize
+    double x = a;
+    double y = b;
+    double x_old = x; 
     unsigned int count = 0;
+    double x_old = x;
+    // x_old --> save current x, since both formulas in the loop need  
+    // to be calculated with same values
+
     // Loop until escape
-    while ( ( count <= maxIters )
-            && ((realPart*realPart + imagPart*imagPart) <= 4.0) ) {
+    while ( ( count <= maxIters ) && ((x*x + y*y) <= 4.0) ) {
         ++count;
-        // Update: z = z*z + z0;
-        double const oldRealPart = realPart;
-        realPart = realPart*realPart - imagPart*imagPart + realPart0;
-        imagPart = 2.0*oldRealPart*imagPart + imagPart0;
+        
+        x_old = x; 
+        x = x*x - y*y + a;
+        y = 2.0*x_old*y + b;
     }
     return count;
 }
@@ -59,10 +63,10 @@ __global__ void processMandelbrotElement(
     }
     
     // Get our X and Y coords
-    double const realPart0 = x[globalThreadIdx];
-    double const imagPart0 = y[globalThreadIdx];
+    double const a = x[globalThreadIdx];
+    double const b = y[globalThreadIdx];
 
     // Run the itearations on this location
-    unsigned int const count = doIterations( realPart0, imagPart0, maxIters );
+    unsigned int const count = doIterations( a, b, maxIters );
     out[globalThreadIdx] = log( double( count + 1 ) );
 }

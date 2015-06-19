@@ -29,7 +29,8 @@ classdef CUDACalculator
 
             % Call the kernel
             count = zeros( size(obj.xGrid), 'gpuArray' );
-            count = feval( kernel, count, obj.xGrid, obj.yGrid, obj.a, obj.b, obj.index, iterations, 1, numElements );
+            count = feval( kernel, count, obj.xGrid, obj.yGrid, obj.a, ...
+                obj.b, obj.index, iterations, 1, numElements );
 
             % Show
             count = gather( count ); % Fetch the data back from the GPU   
