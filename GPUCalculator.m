@@ -16,14 +16,9 @@ classdef GPUCalculator
             obj.index = str2double(get(handles.index,'string'));
         end    
         function [count] = calc(obj, iterations)
-            count = obj.count;
-            
-            for j=1:iterations
-                obj.z=obj.z.^obj.index+obj.c;
-
-                inside = abs( obj.z )<=2;
-                count = count + inside;
-            end
+            count = processMandelbrotElement ( ...
+            obj.count, obj.z, obj.c, obj.index, iterations);
         end
+        
     end
 end

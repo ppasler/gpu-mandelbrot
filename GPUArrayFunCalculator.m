@@ -1,7 +1,7 @@
 classdef GPUArrayFunCalculator
     properties
-       z
        c
+       z
        count
        index
     end    
