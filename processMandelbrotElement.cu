@@ -19,26 +19,29 @@ __device__ size_t calculateGlobalIndex() {
 
 }
 
-/** The actual Mandelbrot algorithm for a single location */ 
-__device__ unsigned int doIterations( double const a, 
-                                      double const b, 
+/** The mandelbrot or julia algorithm for a single location */ 
+__device__ unsigned int doIterations( double const x0, 
+                                      double const y0, 
+                                      double const a, 
+                                      double const b,
+                                      unsigned int const k,                                       
                                       unsigned int const maxIters ) {
-    // Initialize
-    double x = a;
-    double y = b;
-    double x_old = x; 
-    unsigned int count = 0;
-    double x_old = x;
-    // x_old --> save current x, since both formulas in the loop need  
-    // to be calculated with same values
+    // Initialise: z = z0
+    // depending on x0, y0 we calc the mandelbrot or julia set
+    double x = x0;
+    double y = y0;
 
+    unsigned int count = 0;
     // Loop until escape
-    while ( ( count <= maxIters ) && ((x*x + y*y) <= 4.0) ) {
+    while ( ( count <= maxIters )
+            && ((x*x + y*y) <= 4.0) ) {
         ++count;
-        
-        x_old = x; 
+        // Update: z = z*z + z0;
+        double const oldx = x;
+        // real part
         x = x*x - y*y + a;
-        y = 2.0*x_old*y + b;
+        // imaginary part
+        y = 2.0*oldx*y + b;
     }
     return count;
 }
@@ -48,11 +51,15 @@ __device__ unsigned int doIterations( double const a,
  * Works out where the current thread should read/write to global memory
  * and calls doIterations to do the actual work.
  */
-__global__ void processMandelbrotElement( 
+__global__ void processMandelbrotElementTest( 
                       double * out, 
                       const double * x, 
                       const double * y,
-                      const unsigned int maxIters, 
+                      const double a, 
+                      const double b,
+                      const unsigned int k,
+                      const unsigned int maxIters,
+                      const unsigned int mandelbrot,
                       const unsigned int numel ) {
     // Work out which thread we are
     size_t const globalThreadIdx = calculateGlobalIndex();
@@ -63,10 +70,18 @@ __global__ void processMandelbrotElement(
     }
     
     // Get our X and Y coords
-    double const a = x[globalThreadIdx];
-    double const b = y[globalThreadIdx];
+    double x0 = x[globalThreadIdx];
+    double y0 = y[globalThreadIdx];
+
+    double aVal = a;
+    double bVal = b;
+
+    if(mandelbrot == 1){
+      aVal = a*x0;
+      bVal = b*y0;
+    }
 
     // Run the itearations on this location
-    unsigned int const count = doIterations( a, b, maxIters );
+    unsigned int const count = doIterations( x0, y0, aVal, bVal, k, maxIters );
     out[globalThreadIdx] = log( double( count + 1 ) );
 }
