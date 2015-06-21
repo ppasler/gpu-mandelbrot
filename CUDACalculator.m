@@ -21,8 +21,8 @@ classdef CUDACalculator
          end    
         function [count] = calc(obj, iterations)
             % Load the kernel
-            cudaFilename = 'processMandelbrotElement_3.cu';
-            ptxFilename = 'processMandelbrotElement_3.ptx';
+            cudaFilename = 'processMandelbrotElement.cu';
+            ptxFilename = 'processMandelbrotElement.ptx';
             kernel = parallel.gpu.CUDAKernel( ptxFilename, cudaFilename );
             % Make sure we have sufficient blocks to cover all of the locations
             numElements = numel( obj.xGrid );
