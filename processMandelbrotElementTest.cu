@@ -20,24 +20,28 @@ __device__ size_t calculateGlobalIndex() {
 }
 
 /** The actual Mandelbrot algorithm for a single location */ 
-__device__ unsigned int doIterations( double const realPart0, 
-                                      double const imagPart0, 
+__device__ unsigned int doIterations( double const x0, 
+                                      double const y0, 
                                       double const a, 
                                       double const b,
                                       unsigned int const k,                                       
                                       unsigned int const maxIters ) {
     // Initialise: z = z0
-    double realPart = realPart0;
-    double imagPart = imagPart0;
+    // depending on x0, y0 we calc the mandelbrot or julia set
+    double x = x0;
+    double y = y0;
+
     unsigned int count = 0;
     // Loop until escape
     while ( ( count <= maxIters )
-            && ((realPart*realPart + imagPart*imagPart) <= 4.0) ) {
+            && ((x*x + y*y) <= 4.0) ) {
         ++count;
         // Update: z = z*z + z0;
-        double const oldRealPart = realPart;
-        realPart = realPart*realPart - imagPart*imagPart + a*realPart0;
-        imagPart = 2.0*oldRealPart*imagPart + b*imagPart0;
+        double const oldx = x;
+        // real part
+        x = x*x - y*y + a;
+        // imaginary part
+        y = 2.0*oldx*y + b;
     }
     return count;
 }
@@ -66,10 +70,18 @@ __global__ void processMandelbrotElementTest(
     }
     
     // Get our X and Y coords
-    double const realPart0 = x[globalThreadIdx];
-    double const imagPart0 = y[globalThreadIdx];
+    double x0 = x[globalThreadIdx];
+    double y0 = y[globalThreadIdx];
+
+    double aVal = a;
+    double bVal = b;
+
+    if(mandelbrot == 1){
+      aVal = a*x0;
+      bVal = b*y0;
+    }
 
     // Run the itearations on this location
-    unsigned int const count = doIterations( realPart0, imagPart0, a, b, k, maxIters );
+    unsigned int const count = doIterations( x0, y0, aVal, bVal, k, maxIters );
     out[globalThreadIdx] = log( double( count + 1 ) );
 }
