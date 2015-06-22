@@ -9,7 +9,7 @@ classdef BenchmarkTester
     end    
     methods
         function obj = BenchmarkTester(handles)
-            obj.iterations = [1, 10, 100];
+            obj.iterations = [10, 100];
             
             obj.cpuCalculator = CPUCalculator(handles);
             obj.gpuCalculator = GPUCalculator(handles);
@@ -39,11 +39,11 @@ classdef BenchmarkTester
         end
         function calcTime = runTest(obj, calculator, iteration)
             M = 2;
-            N = 2;
+            N = 1;
             % make sure compiler made improvements and caching
-            for i = 1:M
-                calc(calculator, iteration);
-            end
+            %for i = 1:M
+            %    calc(calculator, iteration);
+            %end
             
             % calc 5 times and take avg
             for i = 1:N
