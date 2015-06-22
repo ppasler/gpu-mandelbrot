@@ -17,7 +17,7 @@ classdef CUDACalculator
             obj.b = str2double(get(handles.b, 'string'));
             
             obj.index = str2double(get(handles.index,'string'));
-            obj.mandelbrot = str2double(get(handles.mandelbrot,'string'));
+            obj.mandelbrot = get(handles.mandelbrot,'value');
          end    
         function [count] = calc(obj, iterations)
             % Load the kernel

@@ -207,6 +207,7 @@ function map = setColormap(handles)
     
 function renderBenchmarkPlot(vTime, handles)
     % START BENCHMARK PLOT RENDERING%
+    disp(vTime);
     axes(handles.plotResults); %select plotImage as current plot
     colormap (handles.plotResults, summer);
     benchmarkGroupingLayout(vTime, handles);
@@ -398,9 +399,9 @@ set(handles.julia,'value',0);
 set(handles.a,'String',1);
 set(handles.b,'String',1);
 set(handles.xMin,'String',-2);
-set(handles.xMax,'String',0.5);
-set(handles.yMin,'String',-1.2);
-set(handles.yMax,'String',1.2);
+set(handles.xMax,'String',0.6);
+set(handles.yMin,'String',-1.3);
+set(handles.yMax,'String',1.3);
 
 % --- Executes on button press in julia.
 function julia_Callback(hObject, eventdata, handles)
@@ -418,182 +419,81 @@ set(handles.xMax,'String',1.5);
 set(handles.yMin,'String',-1.5);
 set(handles.yMax,'String',1.5);
 
+function resetComputation(handles)
+set(handles.styleComputationCpu,'value',0);
+set(handles.styleComputationGpu1,'value',0);
+set(handles.styleComputationGpu2,'value',0);
+set(handles.styleComputationGpu3,'value',0);
+set(handles.styleComputationAll,'value', 0);
+set(handles.index, 'enable', 'on');
+set(handles.iterations, 'enable', 'on');
+set(handles.benchmarkPanel,'visible','Off');
 
-% --- Executes on button press in styleComputationCpu.
+
 function styleComputationCpu_Callback(hObject, eventdata, handles)
-% hObject    handle to styleComputationCpu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleComputationCpu
+resetComputation(handles);
 set(handles.styleComputationCpu,'value',1);
-set(handles.styleComputationGpu1,'value',0);
-set(handles.styleComputationGpu2,'value',0);
-set(handles.styleComputationGpu3,'value',0);
-set(handles.styleComputationAll,'value', 0);
-set(handles.benchmarkPanel,'visible','Off');
 
-
-% --- Executes on button press in styleComputationGpu1.
 function styleComputationGpu1_Callback(hObject, eventdata, handles)
-% hObject    handle to styleComputationGpu1 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleComputationGpu1
-set(handles.styleComputationCpu,'value',0);
+resetComputation(handles);
 set(handles.styleComputationGpu1,'value',1);
-set(handles.styleComputationGpu2,'value',0);
-set(handles.styleComputationGpu3,'value',0);
-set(handles.styleComputationAll,'value', 0);
-set(handles.benchmarkPanel,'visible','Off');
 
-
-% --- Executes on button press in styleComputationGpu2.
 function styleComputationGpu2_Callback(hObject, eventdata, handles)
-% hObject    handle to styleComputationGpu2 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleComputationGpu2
-set(handles.styleComputationCpu,'value',0);
-set(handles.styleComputationGpu1,'value',0);
+resetComputation(handles);
 set(handles.styleComputationGpu2,'value',1);
-set(handles.styleComputationGpu3,'value',0);
-set(handles.styleComputationAll,'value', 0);
-set(handles.benchmarkPanel,'visible','Off');
 
-
-% --- Executes on button press in styleComputationGpu3.
 function styleComputationGpu3_Callback(hObject, eventdata, handles)
-% hObject    handle to styleComputationGpu3 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleComputationGpu3
-set(handles.styleComputationCpu,'value',0);
-set(handles.styleComputationGpu1,'value',0);
-set(handles.styleComputationGpu2,'value',0);
+resetComputation(handles);
 set(handles.styleComputationGpu3,'value',1);
-set(handles.styleComputationAll,'value',0);
-set(handles.benchmarkPanel,'visible','Off');
 
 
 % --- Executes on button press in styleComputationAll.
 function styleComputationAll_Callback(hObject, eventdata, handles)
-% hObject    handle to styleComputationAll (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleComputationAll
-set(handles.styleComputationCpu,'value',0);
-set(handles.styleComputationGpu1,'value',0);
-set(handles.styleComputationGpu2,'value',0);
-set(handles.styleComputationGpu3,'value',0);
+resetComputation(handles);
 set(handles.styleComputationAll,'value',1);
+set(handles.index, 'enable', 'off');
+set(handles.iterations, 'enable', 'off');
 set(handles.benchmarkPanel,'visible','On');
 
+function resetDrawing(handles)
+set(handles.styleDrawingJet,'value',0);
+set(handles.styleDrawingHsv,'value',0);
+set(handles.styleDrawingParula,'value',0);
+set(handles.styleDrawingCool,'value',0);
+set(handles.styleDrawingHot,'value',0);
+set(handles.styleDrawingSummer,'value',0);
 
-% --- Executes on button press in styleDrawingJet.
+
 function styleDrawingJet_Callback(hObject, eventdata, handles)
-% hObject    handle to styleDrawingJet (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleDrawingJet
-
+resetDrawing(handles);
 set(handles.styleDrawingJet,'value',1);
-set(handles.styleDrawingHsv,'value',0);
-set(handles.styleDrawingParula,'value',0);
-set(handles.styleDrawingCool,'value',0);
-set(handles.styleDrawingHot,'value',0);
-set(handles.styleDrawingSummer,'value',0);
-
 setColormap(handles);
 
-% --- Executes on button press in styleDrawingHsv.
 function styleDrawingHsv_Callback(hObject, eventdata, handles)
-% hObject    handle to styleDrawingHsv (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleDrawingHsv
-
-set(handles.styleDrawingJet,'value',0);
+resetDrawing(handles);
 set(handles.styleDrawingHsv,'value',1);
-set(handles.styleDrawingParula,'value',0);
-set(handles.styleDrawingCool,'value',0);
-set(handles.styleDrawingHot,'value',0);
-set(handles.styleDrawingSummer,'value',0);
-
 setColormap(handles);
 
-% --- Executes on button press in styleDrawingParula.
 function styleDrawingParula_Callback(hObject, eventdata, handles)
-% hObject    handle to styleDrawingParula (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleDrawingParula
-set(handles.styleDrawingJet,'value',0);
-set(handles.styleDrawingHsv,'value',0);
+resetDrawing(handles);
 set(handles.styleDrawingParula,'value',1);
-set(handles.styleDrawingCool,'value',0);
-set(handles.styleDrawingHot,'value',0);
-set(handles.styleDrawingSummer,'value',0);
-
 setColormap(handles);
 
-% --- Executes on button press in styleDrawingCool.
 function styleDrawingCool_Callback(hObject, eventdata, handles)
-% hObject    handle to styleDrawingCool (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleDrawingCool
-
-set(handles.styleDrawingJet,'value',0);
-set(handles.styleDrawingHsv,'value',0);
-set(handles.styleDrawingParula,'value',0);
+resetDrawing(handles);
 set(handles.styleDrawingCool,'value',1);
-set(handles.styleDrawingHot,'value',0);
-set(handles.styleDrawingSummer,'value',0);
-
 setColormap(handles);
 
-% --- Executes on button press in styleDrawingHot.
 function styleDrawingHot_Callback(hObject, eventdata, handles)
-% hObject    handle to styleDrawingHot (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleDrawingHot
-
-set(handles.styleDrawingJet,'value',0);
-set(handles.styleDrawingHsv,'value',0);
-set(handles.styleDrawingParula,'value',0);
-set(handles.styleDrawingCool,'value',0);
+resetDrawing(handles);
 set(handles.styleDrawingHot,'value',1);
-set(handles.styleDrawingSummer,'value',0);
-
 setColormap(handles);
 
-% --- Executes on button press in styleDrawingSummer.
 function styleDrawingSummer_Callback(hObject, eventdata, handles)
-% hObject    handle to styleDrawingSummer (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of styleDrawingSummer
-
-set(handles.styleDrawingJet,'value',0);
-set(handles.styleDrawingHsv,'value',0);
-set(handles.styleDrawingParula,'value',0);
-set(handles.styleDrawingCool,'value',0);
-set(handles.styleDrawingHot,'value',0);
+resetDrawing(handles);
 set(handles.styleDrawingSummer,'value',1);
-
 setColormap(handles);
+
 
 % --- Executes on button press in bmGroupMethod.
 function bmGroupMethod_Callback(hObject, eventdata, handles)

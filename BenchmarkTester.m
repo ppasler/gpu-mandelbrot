@@ -9,7 +9,7 @@ classdef BenchmarkTester
     end    
     methods
         function obj = BenchmarkTester(handles)
-            obj.iterations = [1, 10];
+            obj.iterations = [10, 100];
             
             obj.cpuCalculator = CPUCalculator(handles);
             obj.gpuCalculator = GPUCalculator(handles);
@@ -37,10 +37,10 @@ classdef BenchmarkTester
             disp('CUDA');
         end
         function calcTime = runTest(obj, calculator, iteration)
-            % make sure compiler is through
-            %for i = 1:5
-            %    calc(calculator, iteration);
-            %end
+            % make sure compiler made improvements and caching
+            for i = 1:1
+                calc(calculator, iteration);
+            end
             
             % calc 5 times and take avg
             for i = 1:1
