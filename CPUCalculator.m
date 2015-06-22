@@ -4,14 +4,15 @@ classdef CPUCalculator
        z
        count
        index
+       xGrid
+       yGrid
     end    
     methods
         function obj = CPUCalculator(handles)
-            gridProvider = GridProvider;
-            [xGrid, yGrid] = initGrid(gridProvider, handles);
+            [obj.xGrid, obj.yGrid] = initGrid(GridProvider, handles);
             
             formula = FormulaProvider;
-            [obj.c, obj.z, obj.count] = getFormula(formula, xGrid, yGrid, handles);
+            [obj.c, obj.z, obj.count] = getFormula(formula, obj.xGrid, obj.yGrid, handles);
 
             obj.index = str2double(get(handles.index,'string'));
         end 

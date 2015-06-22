@@ -67,7 +67,9 @@ function Mandelbrot_GUI_OpeningFcn(hObject, eventdata, handles, varargin)
     set(handles.styleComputationGpu2,'value',0);
     set(handles.styleComputationGpu3,'value',0);
     set(handles.styleComputationAll,'value',0);
-    
+    set(handles.index, 'enable', 'on');
+    set(handles.iterations, 'enable', 'on');
+    set(handles.benchmarkPanel,'visible','Off');
     dcm = datacursormode(gcf);
     datacursormode on;
     set(dcm, 'updatefcn', @updateDataTip);
@@ -147,7 +149,7 @@ else
         setName = 'Julia';
     end
 
-    fprintf( '%1.2f secs for calculating %s set with %s\n', calcTime, setName, methodString);
+    fprintf( '%1.2f secs for calculating %s set with %s and gridsize %d x %d\n', calcTime, setName, methodString, length(calculator.xGrid), length(calculator.yGrid));
     % END CALCULATION %
 
     % --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]

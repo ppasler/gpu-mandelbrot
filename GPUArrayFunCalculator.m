@@ -4,14 +4,16 @@ classdef GPUArrayFunCalculator
        z
        count
        index
+       xGrid
+       yGrid
     end    
     methods
         function obj = GPUArrayFunCalculator(handles)
             gridProvider = GridProvider;
-            [xGrid, yGrid] = initGridGPU(gridProvider, handles);
+            [obj.xGrid, obj.yGrid] = initGridGPU(gridProvider, handles);
 
             formula = FormulaProvider;
-            [obj.c, obj.z, obj.count] = getFormula(formula, xGrid, yGrid, handles);
+            [obj.c, obj.z, obj.count] = getFormula(formula, obj.xGrid, obj.yGrid, handles);
 
             obj.index = str2double(get(handles.index,'string'));
         end    
