@@ -93,17 +93,16 @@ function generateVisualization_Callback(hObject, eventdata, handles)
 % hObject    handle to generateVisualization (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+global legendIterations;
+global legendMethods;
+legendMethods = {'CPU', 'GPU', 'FunArray', 'CUDA'};
+    
 reset(gpuDevice(1));
 if(get(handles.styleComputationAll,'value') == 1)
     benchmark = BenchmarkTester(handles);
     % iterations = [10, 100, 1000]
-    global legendIterations;
     legendIterations = benchmark.iterations;
-    
-    global legendMethods;
-    legendMethods = {'CPU', 'GPU', 'FunArray', 'CUDA'};
-    
+   
     % vtime
     %           | 10 | 100 | 1000 |
     % CPU       |    |     |      |
@@ -153,7 +152,16 @@ else
     % END CALCULATION %
 
     % --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]
-    vTime = [calcTime 0.9 0.8 ; 0.1 0.09 0.08 ; 0.05 0.04 0.035 ; 0.001 0.0009 0.0008];
+    % iterations
+    % legendIterations = [10, 100, 250, 500, 1000];
+    % vTime = [0.58, 5.14, 13.32, 26.07, 54.98; 0.23, 2.64, 6.89, 13.58, 26.98; 0.22, 2.47, 6.39, 0, 0; 0.11, 0.22, 0.4, 0.68, 1.29];
+    
+    % grid
+    legendIterations = [250, 500, 1000, 2080, 2500, 3467];
+    vTime = [0.11, 0.32, 1.1, 4.37, 5.14, 8.37 ; 0.36, 0.44, 0.77, 2.17, 2.64, 5.57; 0.17, 0.25, 0.57, 1.94, 2.47, 5.03; 0.011, 0.02, 0.04, 0.14, 0.22, 0.40];
+
+    set(handles.bmGroupMethod,'value',0);
+    set(handles.bmGroupIterations,'value',1);
     % --- test preparation end
     renderBenchmarkPlot(vTime, handles);
     
@@ -237,14 +245,14 @@ function benchmarkGroupingLayout(data, handles)
         ylabel('time [sec]');
         xlabel('computation method');
         labelIterationString = strtrim(cellstr(num2str(legendIterations'))');
-        legend(handles.plotResults, labelIterationString);
+        legend(handles.plotResults, labelIterationString, 'Location', 'northwest');
     elseif get(handles.bmGroupIterations,'Value') %bar chart for iter. bars
         bar(data.');
         set(gca,'XTickLabel',legendIterations);
         set(gca,'YScale','log');
         ylabel('time [sec]');
         xlabel('iterations');
-        legend(handles.plotResults,legendMethods);
+        legend(handles.plotResults,legendMethods, 'Location', 'northwest');
     end
     % END BENCHMARK GROUP LAYOUT CONFIGURATION %
     
