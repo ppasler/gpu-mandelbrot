@@ -22,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 15-Jun-2015 11:30:33
+% Last Modified by GUIDE v2.5 23-Jun-2015 11:18:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -88,13 +88,13 @@ function varargout = Mandelbrot_GUI_OutputFcn(hObject, eventdata, handles)
    
     
 % --- MANDELBROT FORMULA ---
-% --- Executes on button press in pushbutton1.
-function pushbutton1_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton1 (see GCBO)
+% --- Executes on button press in generateVisualization.
+function generateVisualization_Callback(hObject, eventdata, handles)
+% hObject    handle to generateVisualization (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-
+reset(gpuDevice(1));
 if(get(handles.styleComputationAll,'value') == 1)
     benchmark = BenchmarkTester(handles);
     % iterations = [10, 100, 1000]
@@ -149,13 +149,14 @@ else
         setName = 'Julia';
     end
 
-    fprintf( '%1.2f secs for calculating %s set with %s and gridsize %d x %d\n', calcTime, setName, methodString, length(calculator.xGrid), length(calculator.yGrid));
+    fprintf( '%1.2f secs for calculating %s set with %s and gridsize %d x %d in %d iterations\n', calcTime, setName, methodString, length(calculator.xGrid), length(calculator.yGrid), iterations);
     % END CALCULATION %
 
     % --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]
     vTime = [calcTime 0.9 0.8 ; 0.1 0.09 0.08 ; 0.05 0.04 0.035 ; 0.001 0.0009 0.0008];
     % --- test preparation end
-
+    renderBenchmarkPlot(vTime, handles);
+    
     % display computation time in the results section
     set(handles.panelResults,'visible','On')
     set(handles.panelResults, 'Title', 'Computation Time'); % change panel title
@@ -168,7 +169,6 @@ else
 end
 
 
-%renderBenchmarkPlot(vTime, handles);
 
  
     

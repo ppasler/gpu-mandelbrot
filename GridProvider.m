@@ -21,12 +21,14 @@ classdef GridProvider
             x_min=str2double(get(handles.xMin,'String'));
             x_max=str2double(get(handles.xMax,'String'));
             x_step=str2double(get(handles.step,'String'));
-            x=x_min:x_step:x_max;
+            x_size = round((x_max-x_min) / x_step);
+            x=linspace(x_min,x_max,x_size);
 
             y_min=str2double(get(handles.yMin,'String'));
             y_max=str2double(get(handles.yMax,'String'));
             y_step=str2double(get(handles.step,'String'));
-            y=y_min:y_step:y_max;
+            y_size = round((y_max-y_min) / y_step);
+            y=linspace(y_min,y_max,y_size);
 
             [xGrid, yGrid]=meshgrid(x,y);
        end
