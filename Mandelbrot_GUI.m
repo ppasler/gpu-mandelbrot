@@ -407,9 +407,9 @@ set(handles.julia,'value',0);
 set(handles.a,'String',1);
 set(handles.b,'String',1);
 set(handles.xMin,'String',-2);
-set(handles.xMax,'String',0.6);
-set(handles.yMin,'String',-1.3);
-set(handles.yMax,'String',1.3);
+set(handles.xMax,'String',0.5);
+set(handles.yMin,'String',-1.25);
+set(handles.yMax,'String',1.25);
 
 % --- Executes on button press in julia.
 function julia_Callback(hObject, eventdata, handles)
