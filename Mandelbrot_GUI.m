@@ -97,8 +97,9 @@ global legendIterations;
 global legendMethods;
 legendMethods = {'CPU', 'GPU', 'FunArray', 'CUDA'};
     
-reset(gpuDevice(1));
+
 if(get(handles.styleComputationAll,'value') == 1)
+    reset(gpuDevice(1));
     benchmark = BenchmarkTester(handles);
     % iterations = [10, 100, 1000]
     legendIterations = benchmark.iterations;
@@ -114,19 +115,19 @@ if(get(handles.styleComputationAll,'value') == 1)
 else
     % use simple gpuArray
     if(get(handles.styleComputationGpu1,'value') == 1)
+        reset(gpuDevice(1));
         calculator = GPUCalculator(handles);
         methodString = 'simple GPU';
-
     % use array fun
     elseif(get(handles.styleComputationGpu2,'value') == 1)
+        reset(gpuDevice(1));
         calculator = GPUArrayFunCalculator(handles);
         methodString = 'ArrayFun GPU';
-
     % use CUDA
     elseif(get(handles.styleComputationGpu3,'value') == 1)
+        reset(gpuDevice(1));
         calculator = CUDACalculator(handles);
         methodString = 'CUDA';
-
     % use simple 
     else
         calculator = CPUCalculator(handles);
