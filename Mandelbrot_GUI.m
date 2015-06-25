@@ -169,7 +169,7 @@ else
     set(handles.panelResults,'visible','On')
     set(handles.panelResults, 'Title', 'Computation Time'); % change panel title
     strComputationTime = strcat('It took',{' '},num2str(calcTime, 3), ...
-    ' s to calculate', {' '}, setName, ' set with the ', {' '}, methodString, '.');   
+    ' s to calculate the', {' '}, setName, ' set with the ', {' '}, methodString, '.');   
     set(handles.textResult,'String',strComputationTime);
     % rendering of the visualization and the benchmark plot
     renderImage(count, handles);
