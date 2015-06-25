@@ -152,26 +152,24 @@ else
     fprintf( '%1.2f secs for calculating %s set with %s and gridsize %d x %d in %d iterations\n', calcTime, setName, methodString, length(calculator.xGrid), length(calculator.yGrid), iterations);
     % END CALCULATION %
 
+    % --- TEST SECTION
     % --- test preparation [CPU ; GPU ; GPU_funArray ; CUDA]
     % iterations
-    legendIterations = [10, 100, 250, 500, 1000];
-    vTime = [0.58, 5.14, 13.32, 26.07, 54.98; 0.23, 2.64, 6.89, 13.58, 26.98; 0.22, 2.47, 6.39, 0, 0; 0.11, 0.22, 0.4, 0.68, 1.29];
+    %legendIterations = [10, 100, 250, 500, 1000];
+    %vTime = [0.58, 5.14, 13.32, 26.07, 54.98; 0.23, 2.64, 6.89, 13.58, 26.98; 0.22, 2.47, 6.39, 0, 0; 0.11, 0.22, 0.4, 0.68, 1.29];
     
-    % grid
-    %legendIterations = [250, 500, 1000, 2080, 2500, 3467];
-    %vTime = [0.11, 0.32, 1.1, 4.37, 5.14, 8.37 ; 0.36, 0.44, 0.77, 2.17, 2.64, 5.57; 0.17, 0.25, 0.57, 1.94, 2.47, 5.03; 0.011, 0.02, 0.04, 0.14, 0.22, 0.40];
-
-    set(handles.bmGroupMethod,'value',0);
-    set(handles.bmGroupIterations,'value',1);
+    %set(handles.bmGroupMethod,'value',0);
+    %set(handles.bmGroupIterations,'value',1);
     % --- test preparation end
-    renderBenchmarkPlot(vTime, handles);
+    % renderBenchmarkPlot(vTime, handles);
+    % --- test output end
+    % --- TEST SECTION END
     
     % display computation time in the results section
     set(handles.panelResults,'visible','On')
     set(handles.panelResults, 'Title', 'Computation Time'); % change panel title
     strComputationTime = strcat('It took',{' '},num2str(calcTime, 3), ...
-    ' s to calculate', {' '}, strIterations, ' iterations for the', ...
-    {' '}, setName, ' set with the ', {' '}, methodString, '.');
+    ' s to calculate', {' '}, setName, ' set with the ', {' '}, methodString, '.');   
     set(handles.textResult,'String',strComputationTime);
     % rendering of the visualization and the benchmark plot
     renderImage(count, handles);
@@ -239,18 +237,21 @@ function benchmarkGroupingLayout(data, handles)
     global legendIterations;
     global legendMethods;
     
+    % choose the result plot as the current plot for modification
+    axes(handles.plotResults);
+    
     if get(handles.bmGroupMethod,'Value') %bar chart for method bars
         bar(data);
-        set(gca,'XTickLabel',legendMethods);
-        set(gca,'YScale','log');
+        set(handles.plotResults,'XTickLabel',legendMethods);
+        set(handles.plotResults,'YScale','log');
         ylabel('time [sec]');
         xlabel('computation method');
         labelIterationString = strtrim(cellstr(num2str(legendIterations'))');
-        legend(handles.plotResults, labelIterationString, 'Location', 'northwest');
+        legend(handles.plotResults, labelIterationString, 'Location', 'northeast');
     elseif get(handles.bmGroupIterations,'Value') %bar chart for iter. bars
         bar(data.');
-        set(gca,'XTickLabel',legendIterations);
-        set(gca,'YScale','log');
+        set(handles.plotResults,'XTickLabel',legendIterations);
+        set(handles.plotResults,'YScale','log');
         ylabel('time [sec]');
         xlabel('iterations');
         legend(handles.plotResults,legendMethods, 'Location', 'northwest');
@@ -400,11 +401,7 @@ end
 
 % --- Executes on button press in mandelbrot.
 function mandelbrot_Callback(hObject, eventdata, handles)
-% hObject    handle to mandelbrot (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of mandelbrot
 set(handles.mandelbrot,'value',1);
 set(handles.julia,'value',0);
 set(handles.a,'String',1);
@@ -416,11 +413,7 @@ set(handles.yMax,'String',1.3);
 
 % --- Executes on button press in julia.
 function julia_Callback(hObject, eventdata, handles)
-% hObject    handle to julia (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of julia
 set(handles.mandelbrot,'value',0);
 set(handles.julia,'value',1);
 set(handles.a,'String',-0.7);
@@ -508,11 +501,6 @@ setColormap(handles);
 
 % --- Executes on button press in bmGroupMethod.
 function bmGroupMethod_Callback(hObject, eventdata, handles)
-% hObject    handle to bmGroupMethod (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of bmGroupMethod
 
 set(handles.bmGroupMethod,'value',1);
 set(handles.bmGroupIterations,'value',0);
@@ -528,11 +516,6 @@ end
 
 % --- Executes on button press in bmGroupIterations.
 function bmGroupIterations_Callback(hObject, eventdata, handles)
-% hObject    handle to bmGroupIterations (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of bmGroupIterations
 
 set(handles.bmGroupMethod,'value',0);
 set(handles.bmGroupIterations,'value',1);
@@ -550,9 +533,6 @@ end
 % --------------------------------------------------------------------
 % --- save the image in the local directory
 function saveImage_ClickedCallback(hObject, eventdata, handles)
-% hObject    handle to saveImage (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 % retrieve data and colormap
 data = log(get(get(handles.plotImage, 'Children'),'CData'));
@@ -569,11 +549,6 @@ imwrite(data, 'visualization.png', 'png');
 
 % --------------------------------------------------------------------
 function output_txt = updateDataTip ( obj,event_obj)
-% Display the position of the data cursor
-% obj          Currently not used (empty)
-% event_obj    Handle to event object
-% output_txt   Data cursor text string (string or cell array of strings).
-% event_obj
 
 dataIndex = get(event_obj,'Target');
 pos = get(event_obj,'Position');
@@ -589,8 +564,5 @@ end
 
 % --------------------------------------------------------------------
 function uitoggletool5_ClickedCallback(hObject, eventdata, handles)
-% hObject    handle to uitoggletool5 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
 
 datacursormode toggle;
