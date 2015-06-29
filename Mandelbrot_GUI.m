@@ -22,7 +22,7 @@ function varargout = Mandelbrot_GUI(varargin)
 
 % Edit the above text to modify the response to help Mandelbrot_GUI
 
-% Last Modified by GUIDE v2.5 23-Jun-2015 11:18:28
+% Last Modified by GUIDE v2.5 29-Jun-2015 15:49:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -100,6 +100,7 @@ legendMethods = {'CPU', 'GPU', 'FunArray', 'CUDA'};
 
 if(get(handles.styleComputationAll,'value') == 1)
     reset(gpuDevice(1));
+    set(handles.index,'String',2); 
     benchmark = BenchmarkTester(handles);
     % iterations = [10, 100, 1000]
     legendIterations = benchmark.iterations;
@@ -410,6 +411,8 @@ set(handles.xMin,'String',-2);
 set(handles.xMax,'String',0.5);
 set(handles.yMin,'String',-1.25);
 set(handles.yMax,'String',1.25);
+set(handles.step,'String',0.001);
+
 
 % --- Executes on button press in julia.
 function julia_Callback(hObject, eventdata, handles)
@@ -422,6 +425,7 @@ set(handles.xMin,'String',-1.5);
 set(handles.xMax,'String',1.5);
 set(handles.yMin,'String',-1.5);
 set(handles.yMax,'String',1.5);
+set(handles.step,'String',0.001);
 
 function resetComputation(handles)
 set(handles.styleComputationCpu,'value',0);
@@ -432,6 +436,8 @@ set(handles.styleComputationAll,'value', 0);
 set(handles.index, 'enable', 'on');
 set(handles.iterations, 'enable', 'on');
 set(handles.benchmarkPanel,'visible','Off');
+set(handles.step,'String',0.001);
+
 
 
 function styleComputationCpu_Callback(hObject, eventdata, handles)
@@ -566,3 +572,47 @@ end
 function uitoggletool5_ClickedCallback(hObject, eventdata, handles)
 
 datacursormode toggle;
+
+
+% --- Executes on button press in tal.
+function tal_Callback(hObject, eventdata, handles)
+set(handles.mandelbrot,'value',1);
+set(handles.julia,'value',0);
+set(handles.a,'String',1);
+set(handles.b,'String',1);
+set(handles.xMin,'String',-1);
+set(handles.xMax,'String',-0.5);
+set(handles.yMin,'String',-0.5);
+set(handles.yMax,'String',0);
+set(handles.step,'String',0.0005);
+set(handles.wirbel,'value',0);
+set(handles.kueste,'value',0);
+
+% --- Executes on button press in wirbel.
+function wirbel_Callback(hObject, eventdata, handles)
+set(handles.mandelbrot,'value',1);
+set(handles.julia,'value',0);
+set(handles.a,'String',1);
+set(handles.b,'String',1);
+set(handles.xMin,'String',-0.733);
+set(handles.xMax,'String',-0.732);
+set(handles.yMin,'String',-0.2415);
+set(handles.yMax,'String',-0.2405);
+set(handles.step,'String',0.000001);
+set(handles.tal,'value',0);
+set(handles.kueste,'value',0);
+
+
+% --- Executes on button press in kueste.
+function kueste_Callback(hObject, eventdata, handles)
+set(handles.mandelbrot,'value',0);
+set(handles.julia,'value',1);
+set(handles.a,'String',-0.5);
+set(handles.b,'String',0.5);
+set(handles.xMin,'String',0.09);
+set(handles.xMax,'String',0.13);
+set(handles.yMin,'String',-0.98);
+set(handles.yMax,'String',-0.94);
+set(handles.step,'String',0.00001);
+set(handles.tal,'value',0);
+set(handles.wirbel,'value',0);
